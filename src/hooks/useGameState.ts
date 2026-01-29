@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Quest, 
   PlayerStats, 
@@ -9,71 +10,88 @@ import {
   calculateLevel 
 } from '@/types/game';
 
-const initialQuests: Quest[] = [
-  {
-    id: '1',
-    title: 'Morning Workout',
-    description: 'Complete a 30-minute exercise session',
-    difficulty: 'medium',
-    category: 'fitness',
-    completed: false,
-    createdAt: new Date(),
-  },
-  {
-    id: '2',
-    title: 'Read for 20 minutes',
-    description: 'Read a book or educational article',
-    difficulty: 'easy',
-    category: 'learning',
-    completed: false,
-    createdAt: new Date(),
-  },
-  {
-    id: '3',
-    title: 'Complete project milestone',
-    description: 'Finish the current sprint deliverable',
-    difficulty: 'hard',
-    category: 'career',
-    completed: false,
-    createdAt: new Date(),
-  },
-  {
-    id: '4',
-    title: 'Call a friend',
-    description: 'Catch up with someone you haven\'t talked to in a while',
-    difficulty: 'easy',
-    category: 'social',
-    completed: false,
-    createdAt: new Date(),
-  },
-  {
-    id: '5',
-    title: 'Learn a new skill',
-    description: 'Spend 1 hour on a tutorial or course',
-    difficulty: 'medium',
-    category: 'learning',
-    completed: false,
-    createdAt: new Date(),
-  },
-];
-
-const initialStats: PlayerStats = {
-  xp: 75,
-  gold: 120,
+const defaultStats: PlayerStats = {
+  xp: 0,
+  gold: 50,
   level: 1,
   attributes: {
     strength: 5,
-    intelligence: 8,
-    charisma: 6,
-    vitality: 7,
+    intelligence: 5,
+    charisma: 5,
+    vitality: 5,
   },
 };
 
-export const useGameState = () => {
-  const [quests, setQuests] = useState<Quest[]>(initialQuests);
-  const [stats, setStats] = useState<PlayerStats>(initialStats);
+export const useGameState = (userId: string | undefined) => {
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [stats, setStats] = useState<PlayerStats>(defaultStats);
+  const [loading, setLoading] = useState(true);
 
-  const completeQuest = useCallback((questId: string): { leveledUp: boolean; reward: { xp: number; gold: number } } => {
+  // Fetch quests and stats from database
+  useEffect(() => {
+    if (!userId) {
+      setQuests([]);
+      setStats(defaultStats);
+      setLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      setLoading(true);
+      
+      // Fetch quests
+      const { data: questsData, error: questsError } = await supabase
+        .from('quests')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (questsError) {
+        console.error('Error fetching quests:', questsError);
+      } else if (questsData) {
+        setQuests(questsData.map(q => ({
+          id: q.id,
+          title: q.title,
+          description: q.description ?? undefined,
+          difficulty: q.difficulty as Difficulty,
+          category: q.category as Category,
+          completed: q.completed,
+          createdAt: new Date(q.created_at),
+        })));
+      }
+
+      // Fetch player stats
+      const { data: statsData, error: statsError } = await supabase
+        .from('player_stats')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (statsError) {
+        console.error('Error fetching stats:', statsError);
+      } else if (statsData) {
+        setStats({
+          xp: statsData.xp,
+          gold: statsData.gold,
+          level: calculateLevel(statsData.xp),
+          attributes: {
+            strength: statsData.strength,
+            intelligence: statsData.intelligence,
+            charisma: statsData.charisma,
+            vitality: statsData.vitality,
+          },
+        });
+      }
+
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [userId]);
+
+  const completeQuest = useCallback(async (questId: string): Promise<{ leveledUp: boolean; reward: { xp: number; gold: number } }> => {
+    if (!userId) return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+
     const quest = quests.find(q => q.id === questId);
     if (!quest || quest.completed) {
       return { leveledUp: false, reward: { xp: 0, gold: 0 } };
@@ -87,6 +105,35 @@ export const useGameState = () => {
     const newLevel = calculateLevel(newXp);
     const leveledUp = newLevel > oldLevel;
 
+    // Update quest in database
+    const { error: questError } = await supabase
+      .from('quests')
+      .update({ completed: true })
+      .eq('id', questId);
+
+    if (questError) {
+      console.error('Error completing quest:', questError);
+      return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+    }
+
+    // Update stats in database
+    const newStats = {
+      xp: newXp,
+      gold: stats.gold + reward.gold,
+      [attributeKey]: stats.attributes[attributeKey] + 1,
+    };
+
+    const { error: statsError } = await supabase
+      .from('player_stats')
+      .update(newStats)
+      .eq('user_id', userId);
+
+    if (statsError) {
+      console.error('Error updating stats:', statsError);
+      return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+    }
+
+    // Update local state
     setStats(prev => ({
       ...prev,
       xp: newXp,
@@ -105,24 +152,57 @@ export const useGameState = () => {
     );
 
     return { leveledUp, reward };
-  }, [quests, stats.xp]);
+  }, [quests, stats, userId]);
 
-  const addQuest = useCallback((title: string, difficulty: Difficulty, category: Category, description?: string) => {
-    const newQuest: Quest = {
-      id: Date.now().toString(),
-      title,
-      description,
-      difficulty,
-      category,
-      completed: false,
-      createdAt: new Date(),
-    };
-    setQuests(prev => [newQuest, ...prev]);
-  }, []);
+  const addQuest = useCallback(async (title: string, difficulty: Difficulty, category: Category, description?: string) => {
+    if (!userId) return;
 
-  const deleteQuest = useCallback((questId: string) => {
+    const { data, error } = await supabase
+      .from('quests')
+      .insert({
+        user_id: userId,
+        title,
+        description,
+        difficulty,
+        category,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding quest:', error);
+      return;
+    }
+
+    if (data) {
+      const newQuest: Quest = {
+        id: data.id,
+        title: data.title,
+        description: data.description ?? undefined,
+        difficulty: data.difficulty as Difficulty,
+        category: data.category as Category,
+        completed: data.completed,
+        createdAt: new Date(data.created_at),
+      };
+      setQuests(prev => [newQuest, ...prev]);
+    }
+  }, [userId]);
+
+  const deleteQuest = useCallback(async (questId: string) => {
+    if (!userId) return;
+
+    const { error } = await supabase
+      .from('quests')
+      .delete()
+      .eq('id', questId);
+
+    if (error) {
+      console.error('Error deleting quest:', error);
+      return;
+    }
+
     setQuests(prev => prev.filter(q => q.id !== questId));
-  }, []);
+  }, [userId]);
 
   const activeQuests = quests.filter(q => !q.completed);
   const completedQuests = quests.filter(q => q.completed);
@@ -132,6 +212,7 @@ export const useGameState = () => {
     activeQuests,
     completedQuests,
     stats,
+    loading,
     completeQuest,
     addQuest,
     deleteQuest,

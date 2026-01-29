@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
 import { Flame, LogOut, Loader2 } from 'lucide-react';
 import { CharacterHeader } from '@/components/CharacterHeader';
+import { AmbientAudioControl } from '@/components/AmbientAudioControl';
 import { QuestLog } from '@/components/QuestLog';
 import { StatsPanel } from '@/components/StatsPanel';
 import { Leaderboard } from '@/components/Leaderboard';
@@ -93,15 +94,19 @@ const Index = () => {
             </h1>
           </div>
           
-          <motion.button
-            onClick={handleSignOut}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-3 py-2 rounded bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors text-sm"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline font-display text-xs">Leave</span>
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <AmbientAudioControl />
+            
+            <motion.button
+              onClick={handleSignOut}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-3 py-2 rounded bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors text-sm"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline font-display text-xs">Leave</span>
+            </motion.button>
+          </div>
         </motion.div>
 
         {/* Character Header */}

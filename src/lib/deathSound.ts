@@ -18,102 +18,134 @@ export const playDeathSound = () => {
 
   const now = ctx.currentTime;
 
-  // Dark Souls "YOU DIED" style sound
-  // Deep impact hit first
-  const impactOsc = ctx.createOscillator();
+  // DARK SOULS "YOU DIED" - Heavy, oppressive, dread-inducing
+  
+  // Massive low-end impact - like a giant door slamming
+  const impact = ctx.createOscillator();
   const impactGain = ctx.createGain();
-  const impactFilter = ctx.createBiquadFilter();
+  const impactDistortion = ctx.createWaveShaper();
   
-  impactOsc.type = 'sawtooth';
-  impactOsc.frequency.setValueAtTime(80, now);
-  impactOsc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+  // Create distortion curve for gritty impact
+  const curve = new Float32Array(256);
+  for (let i = 0; i < 256; i++) {
+    const x = (i * 2) / 256 - 1;
+    curve[i] = Math.tanh(x * 3);
+  }
+  impactDistortion.curve = curve;
   
-  impactFilter.type = 'lowpass';
-  impactFilter.frequency.setValueAtTime(200, now);
-  impactFilter.Q.value = 2;
+  impact.type = 'sawtooth';
+  impact.frequency.setValueAtTime(50, now);
+  impact.frequency.exponentialRampToValueAtTime(20, now + 0.8);
   
-  impactGain.gain.setValueAtTime(0.4, now);
-  impactGain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+  impactGain.gain.setValueAtTime(0.5, now);
+  impactGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
   
-  impactOsc.connect(impactFilter);
-  impactFilter.connect(impactGain);
+  impact.connect(impactDistortion);
+  impactDistortion.connect(impactGain);
   impactGain.connect(ctx.destination);
   
-  impactOsc.start(now);
-  impactOsc.stop(now + 1);
+  impact.start(now);
+  impact.stop(now + 1.5);
 
-  // Ominous choir-like pad (stacked fifths)
-  const choirNotes = [
-    { freq: 73.42, detune: -5 },   // D2
-    { freq: 110, detune: 3 },      // A2
-    { freq: 146.83, detune: -3 },  // D3
-    { freq: 220, detune: 5 },      // A3
+  // Dissonant minor second drone - pure dread
+  const droneNotes = [
+    { freq: 55, detune: 0 },      // A1
+    { freq: 58.27, detune: -10 }, // Bb1 - dissonant minor 2nd
+    { freq: 82.41, detune: 5 },   // E2 - tritone (devil's interval)
   ];
   
-  choirNotes.forEach(({ freq, detune }) => {
+  droneNotes.forEach(({ freq, detune }) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
     
-    osc.type = 'sine';
+    osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(freq, now);
     osc.detune.setValueAtTime(detune, now);
-    osc.frequency.linearRampToValueAtTime(freq * 0.97, now + 3);
+    osc.frequency.linearRampToValueAtTime(freq * 0.9, now + 4);
     
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(800, now);
-    filter.frequency.linearRampToValueAtTime(200, now + 3);
+    filter.frequency.setValueAtTime(400, now);
+    filter.frequency.linearRampToValueAtTime(100, now + 4);
+    filter.Q.value = 2;
     
-    gain.gain.setValueAtTime(0, now + 0.1);
-    gain.gain.linearRampToValueAtTime(0.08, now + 0.5);
-    gain.gain.setValueAtTime(0.08, now + 2);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 4);
+    gain.gain.setValueAtTime(0, now + 0.2);
+    gain.gain.linearRampToValueAtTime(0.12, now + 0.8);
+    gain.gain.setValueAtTime(0.1, now + 3);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 5);
     
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(ctx.destination);
     
-    osc.start(now + 0.1);
-    osc.stop(now + 4.5);
+    osc.start(now + 0.2);
+    osc.stop(now + 5.5);
   });
 
-  // Slow descending bell tone
-  const bellFreqs = [880, 1760, 2640];
-  bellFreqs.forEach((freq, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now + 0.3);
-    osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + 2);
-    
-    gain.gain.setValueAtTime(0, now + 0.3);
-    gain.gain.linearRampToValueAtTime(0.06 - i * 0.015, now + 0.35);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    
-    osc.start(now + 0.3);
-    osc.stop(now + 3);
-  });
+  // Descending doom tone - like your soul leaving
+  const doom = ctx.createOscillator();
+  const doomGain = ctx.createGain();
+  const doomFilter = ctx.createBiquadFilter();
+  
+  doom.type = 'triangle';
+  doom.frequency.setValueAtTime(220, now + 0.3);
+  doom.frequency.exponentialRampToValueAtTime(55, now + 2.5);
+  
+  doomFilter.type = 'lowpass';
+  doomFilter.frequency.setValueAtTime(600, now + 0.3);
+  doomFilter.frequency.linearRampToValueAtTime(150, now + 2.5);
+  
+  doomGain.gain.setValueAtTime(0, now + 0.3);
+  doomGain.gain.linearRampToValueAtTime(0.15, now + 0.5);
+  doomGain.gain.exponentialRampToValueAtTime(0.001, now + 3);
+  
+  doom.connect(doomFilter);
+  doomFilter.connect(doomGain);
+  doomGain.connect(ctx.destination);
+  
+  doom.start(now + 0.3);
+  doom.stop(now + 3.5);
 
-  // Sub bass rumble
-  const subBass = ctx.createOscillator();
+  // Sub-bass rumble - feel it in your chest
+  const sub = ctx.createOscillator();
   const subGain = ctx.createGain();
   
-  subBass.type = 'sine';
-  subBass.frequency.setValueAtTime(40, now);
-  subBass.frequency.linearRampToValueAtTime(25, now + 3);
+  sub.type = 'sine';
+  sub.frequency.setValueAtTime(30, now);
+  sub.frequency.linearRampToValueAtTime(18, now + 4);
   
-  subGain.gain.setValueAtTime(0, now);
-  subGain.gain.linearRampToValueAtTime(0.2, now + 0.2);
-  subGain.gain.setValueAtTime(0.15, now + 2);
-  subGain.gain.exponentialRampToValueAtTime(0.001, now + 4);
+  subGain.gain.setValueAtTime(0.35, now);
+  subGain.gain.setValueAtTime(0.3, now + 2);
+  subGain.gain.exponentialRampToValueAtTime(0.001, now + 5);
   
-  subBass.connect(subGain);
+  sub.connect(subGain);
   subGain.connect(ctx.destination);
   
-  subBass.start(now);
-  subBass.stop(now + 4.5);
+  sub.start(now);
+  sub.stop(now + 5.5);
+
+  // Noise burst for texture - like ash/dust
+  const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
+  const noiseData = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < noiseData.length; i++) {
+    noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.1));
+  }
+  
+  const noise = ctx.createBufferSource();
+  noise.buffer = noiseBuffer;
+  const noiseGain = ctx.createGain();
+  const noiseFilter = ctx.createBiquadFilter();
+  
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.value = 200;
+  noiseFilter.Q.value = 0.5;
+  
+  noiseGain.gain.setValueAtTime(0.2, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+  
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  
+  noise.start(now);
 };

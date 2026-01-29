@@ -9,10 +9,7 @@ import {
 } from '@/components/ui/popover';
 
 export const AmbientAudioControl = () => {
-  const { isLoading, isPlaying, volume, toggle, setVolume } = useAmbientAudio({
-    prompt: "Crackling bonfire campfire with wood burning and popping embers, warm cozy fire ambient loop",
-    duration: 10,
-  });
+  const { isLoading, isPlaying, volume, toggle, setVolume } = useAmbientAudio();
 
   return (
     <Popover>

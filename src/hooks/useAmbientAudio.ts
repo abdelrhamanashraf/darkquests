@@ -1,157 +1,192 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { toast } from 'sonner';
 
-interface UseAmbientAudioOptions {
-  prompt?: string;
-  duration?: number;
-  autoStart?: boolean;
-}
-
-export const useAmbientAudio = (options: UseAmbientAudioOptions = {}) => {
-  const {
-    prompt = "Crackling bonfire, warm cozy campfire with wood burning, gentle fire ambient sound",
-    duration = 10,
-    autoStart = false,
-  } = options;
-
-  const [isLoading, setIsLoading] = useState(false);
+// Synthesized bonfire ambient audio using Web Audio API - no external API needed
+export const useAmbientAudio = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.3);
-  const [error, setError] = useState<string | null>(null);
+  const [volume, setVolume] = useState(0.4);
   
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrlRef = useRef<string | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const masterGainRef = useRef<GainNode | null>(null);
+  const noiseSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const crackleIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const generateAndLoadAudio = useCallback(async () => {
-    if (audioUrlRef.current) {
-      // Already loaded
-      return true;
+  const createBrownNoise = useCallback((ctx: AudioContext, duration: number) => {
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    let lastOut = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
     }
+    return buffer;
+  }, []);
 
-    setIsLoading(true);
-    setError(null);
+  const createCrackle = useCallback((ctx: AudioContext, masterGain: GainNode) => {
+    if (ctx.state !== 'running') return;
+    
+    const now = ctx.currentTime;
+    
+    // Random crackle pop
+    const bufferSize = ctx.sampleRate * 0.08;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    let lastOut = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
+    }
+    
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 600 + Math.random() * 600;
+    filter.Q.value = 0.5;
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.1, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05 + Math.random() * 0.05);
+    
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+    
+    source.start(now);
+    source.stop(now + 0.1);
+  }, []);
 
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-sfx`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ prompt, duration }),
-        }
-      );
+  const createDeepRumble = useCallback((ctx: AudioContext, masterGain: GainNode) => {
+    if (ctx.state !== 'running') return;
+    
+    const now = ctx.currentTime;
+    
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(50 + Math.random() * 20, now);
+    osc.frequency.linearRampToValueAtTime(40 + Math.random() * 30, now + 0.4);
+    
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.04 + Math.random() * 0.02, now + 0.05);
+    gain.gain.linearRampToValueAtTime(0.02, now + 0.25);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    
+    osc.connect(gain);
+    gain.connect(masterGain);
+    
+    osc.start(now);
+    osc.stop(now + 0.6);
+  }, []);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Request failed: ${response.status}`);
+  const startAudio = useCallback(() => {
+    if (audioContextRef.current) return;
+    
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContextRef.current = ctx;
+    
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    
+    // Master gain for volume control
+    const masterGain = ctx.createGain();
+    masterGain.gain.value = volume;
+    masterGain.connect(ctx.destination);
+    masterGainRef.current = masterGain;
+    
+    // Base fire roar - filtered brown noise
+    const noiseBuffer = createBrownNoise(ctx, 10);
+    const noiseSource = ctx.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    noiseSource.loop = true;
+    
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.value = 400;
+    noiseFilter.Q.value = 0.5;
+    
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.15;
+    
+    noiseSource.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(masterGain);
+    noiseSource.start();
+    noiseSourceRef.current = noiseSource;
+    
+    // Random crackles and pops
+    crackleIntervalRef.current = setInterval(() => {
+      if (Math.random() > 0.3) {
+        createCrackle(ctx, masterGain);
       }
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      audioUrlRef.current = audioUrl;
-
-      const audio = new Audio(audioUrl);
-      audio.loop = true;
-      audio.volume = volume;
-      audioRef.current = audio;
-
-      audio.addEventListener('ended', () => {
-        // Loop is enabled, but just in case
-        if (audio.loop) {
-          audio.currentTime = 0;
-          audio.play().catch(console.error);
-        }
-      });
-
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load ambient audio';
-      setError(message);
-      console.error('Ambient audio error:', err);
-      toast.error('Failed to load ambient audio');
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [prompt, duration, volume]);
-
-  const play = useCallback(async () => {
-    if (!audioRef.current) {
-      const loaded = await generateAndLoadAudio();
-      if (!loaded) return;
-    }
-
-    if (audioRef.current) {
-      try {
-        await audioRef.current.play();
-        setIsPlaying(true);
-      } catch (err) {
-        console.error('Failed to play audio:', err);
-        toast.error('Click to enable audio');
+      if (Math.random() > 0.85) {
+        createDeepRumble(ctx, masterGain);
       }
-    }
-  }, [generateAndLoadAudio]);
+    }, 80);
+    
+    setIsPlaying(true);
+  }, [volume, createBrownNoise, createCrackle, createDeepRumble]);
 
-  const pause = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
+  const stopAudio = useCallback(() => {
+    if (crackleIntervalRef.current) {
+      clearInterval(crackleIntervalRef.current);
+      crackleIntervalRef.current = null;
     }
+    
+    if (noiseSourceRef.current) {
+      noiseSourceRef.current.stop();
+      noiseSourceRef.current = null;
+    }
+    
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    
+    masterGainRef.current = null;
+    setIsPlaying(false);
   }, []);
 
   const toggle = useCallback(() => {
     if (isPlaying) {
-      pause();
+      stopAudio();
     } else {
-      play();
+      startAudio();
     }
-  }, [isPlaying, play, pause]);
+  }, [isPlaying, startAudio, stopAudio]);
 
   const updateVolume = useCallback((newVolume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, newVolume));
     setVolume(clampedVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = clampedVolume;
+    if (masterGainRef.current) {
+      masterGainRef.current.gain.value = clampedVolume;
     }
   }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      if (audioUrlRef.current) {
-        URL.revokeObjectURL(audioUrlRef.current);
-        audioUrlRef.current = null;
-      }
+      stopAudio();
     };
-  }, []);
-
-  // Auto-start if enabled (requires user interaction first)
-  useEffect(() => {
-    if (autoStart && !audioRef.current) {
-      const handleFirstInteraction = () => {
-        play();
-        document.removeEventListener('click', handleFirstInteraction);
-      };
-      document.addEventListener('click', handleFirstInteraction);
-      return () => document.removeEventListener('click', handleFirstInteraction);
-    }
-  }, [autoStart, play]);
+  }, [stopAudio]);
 
   return {
-    isLoading,
+    isLoading: false,
     isPlaying,
     volume,
-    error,
-    play,
-    pause,
+    error: null,
+    play: startAudio,
+    pause: stopAudio,
     toggle,
     setVolume: updateVolume,
   };

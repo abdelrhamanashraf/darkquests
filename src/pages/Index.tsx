@@ -9,8 +9,10 @@ import { QuestLog } from '@/components/QuestLog';
 import { StatsPanel } from '@/components/StatsPanel';
 import { Leaderboard } from '@/components/Leaderboard';
 import { LevelUpToast } from '@/components/LevelUpToast';
+import { YouDiedOverlay } from '@/components/YouDiedOverlay';
 import { useGameState } from '@/hooks/useGameState';
 import { playQuestCompleteSound, playLevelUpSound } from '@/lib/sounds';
+import { playDeathSound } from '@/lib/deathSound';
 import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
@@ -18,6 +20,13 @@ const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { activeQuests, stats, loading: dataLoading, completeQuest, addQuest, deleteQuest } = useGameState(user?.id);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [showYouDied, setShowYouDied] = useState(false);
+
+  const handleDeleteQuest = useCallback(async (questId: string) => {
+    await deleteQuest(questId);
+    playDeathSound();
+    setShowYouDied(true);
+  }, [deleteQuest]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -119,7 +128,7 @@ const Index = () => {
             <QuestLog
               quests={activeQuests}
               onComplete={handleCompleteQuest}
-              onDelete={deleteQuest}
+              onDelete={handleDeleteQuest}
               onAdd={addQuest}
             />
           </div>
@@ -140,6 +149,12 @@ const Index = () => {
           show={showLevelUp}
           level={stats.level}
           onClose={() => setShowLevelUp(false)}
+        />
+
+        {/* You Died Overlay */}
+        <YouDiedOverlay
+          show={showYouDied}
+          onClose={() => setShowYouDied(false)}
         />
       </div>
     </div>

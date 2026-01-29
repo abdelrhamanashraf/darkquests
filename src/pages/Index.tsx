@@ -10,6 +10,7 @@ import { StatsPanel } from '@/components/StatsPanel';
 import { Leaderboard } from '@/components/Leaderboard';
 import { LevelUpToast } from '@/components/LevelUpToast';
 import { YouDiedOverlay } from '@/components/YouDiedOverlay';
+import { BossVictoryBanner } from '@/components/BossVictoryBanner';
 import { useGameState } from '@/hooks/useGameState';
 import { playQuestCompleteSound, playLevelUpSound, playBossDefeatSound } from '@/lib/sounds';
 import { playDeathSound } from '@/lib/deathSound';
@@ -22,6 +23,7 @@ const Index = () => {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showYouDied, setShowYouDied] = useState(false);
   const [screenShake, setScreenShake] = useState(false);
+  const [showBossVictory, setShowBossVictory] = useState(false);
 
   const handleDeleteQuest = useCallback(async (questId: string) => {
     await deleteQuest(questId);
@@ -47,6 +49,9 @@ const Index = () => {
       // Screen shake
       setScreenShake(true);
       setTimeout(() => setScreenShake(false), 500);
+      
+      // Show "HEIR OF FIRE DESTROYED" banner
+      setTimeout(() => setShowBossVictory(true), 300);
       
       // Golden confetti burst - multiple waves
       const goldenColors = ['#ffd700', '#ffb700', '#ffa500', '#fff8dc', '#daa520', '#f0e68c'];
@@ -209,6 +214,12 @@ const Index = () => {
         <YouDiedOverlay
           show={showYouDied}
           onClose={() => setShowYouDied(false)}
+        />
+
+        {/* Boss Victory Banner */}
+        <BossVictoryBanner
+          show={showBossVictory}
+          onClose={() => setShowBossVictory(false)}
         />
       </div>
     </div>

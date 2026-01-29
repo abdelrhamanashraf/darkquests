@@ -2,85 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
-@import '@fontsource/press-start-2p';
+@import '@fontsource/cinzel/400.css';
+@import '@fontsource/cinzel/500.css';
+@import '@fontsource/cinzel/600.css';
+@import '@fontsource/cinzel/700.css';
 @import '@fontsource/inter/400.css';
 @import '@fontsource/inter/500.css';
 @import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
 
 @layer base {
   :root {
-    /* Dark RPG Theme - Primary palette */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 96%;
+    /* Dark Souls Theme - Ashen & Ember palette */
+    --background: 0 0% 5%;
+    --foreground: 35 10% 85%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 96%;
+    --card: 0 0% 7%;
+    --card-foreground: 35 10% 85%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 35 10% 85%;
 
-    /* Primary - Indigo/Purple for magic */
-    --primary: 243 75% 59%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Ember Orange/Red */
+    --primary: 20 90% 45%;
+    --primary-foreground: 35 10% 95%;
 
-    /* Secondary - Slate for panels */
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 96%;
+    /* Secondary - Ash/Stone */
+    --secondary: 30 5% 12%;
+    --secondary-foreground: 35 10% 85%;
 
-    /* Muted - Darker slate */
-    --muted: 217 33% 12%;
-    --muted-foreground: 215 20% 55%;
+    /* Muted - Deeper ash */
+    --muted: 30 5% 8%;
+    --muted-foreground: 35 10% 50%;
 
-    /* Accent - Cyan glow */
-    --accent: 186 100% 50%;
-    --accent-foreground: 222 47% 6%;
+    /* Accent - Bonfire glow */
+    --accent: 35 100% 50%;
+    --accent-foreground: 0 0% 5%;
 
-    /* Gold for currency */
-    --gold: 43 96% 56%;
-    --gold-foreground: 222 47% 6%;
+    /* Souls (Gold equivalent) */
+    --gold: 45 80% 55%;
+    --gold-foreground: 0 0% 5%;
 
-    /* XP/Level - Emerald */
-    --xp: 160 84% 39%;
-    --xp-foreground: 210 40% 98%;
+    /* Humanity/Estus (XP equivalent) */
+    --xp: 30 100% 50%;
+    --xp-foreground: 0 0% 5%;
 
-    /* Difficulty colors */
-    --easy: 142 76% 36%;
-    --medium: 38 92% 50%;
-    --hard: 0 84% 60%;
-    --legendary: 270 76% 60%;
+    /* Difficulty colors - more muted/dark */
+    --easy: 120 30% 30%;
+    --medium: 35 70% 40%;
+    --hard: 0 70% 45%;
+    --legendary: 280 50% 45%;
 
-    /* Category colors */
-    --fitness: 0 84% 60%;
-    --career: 217 91% 60%;
-    --social: 280 67% 60%;
-    --learning: 160 84% 39%;
+    /* Category colors - desaturated medieval */
+    --fitness: 0 50% 45%;
+    --career: 35 60% 45%;
+    --social: 280 40% 45%;
+    --learning: 160 40% 35%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 35 10% 95%;
 
-    --border: 217 33% 20%;
-    --input: 217 33% 17%;
-    --ring: 243 75% 59%;
+    --border: 30 10% 15%;
+    --input: 30 5% 12%;
+    --ring: 20 90% 45%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Glassmorphism */
-    --glass-bg: 222 47% 11% / 0.8;
-    --glass-border: 217 33% 30% / 0.5;
-    --glow-primary: 243 75% 59% / 0.4;
-    --glow-accent: 186 100% 50% / 0.3;
-    --glow-gold: 43 96% 56% / 0.4;
-    --glow-xp: 160 84% 39% / 0.4;
+    /* Dark Souls effects */
+    --glass-bg: 0 0% 6% / 0.9;
+    --glass-border: 30 10% 20% / 0.5;
+    --glow-primary: 20 90% 45% / 0.5;
+    --glow-accent: 35 100% 50% / 0.4;
+    --glow-gold: 45 80% 55% / 0.5;
+    --glow-xp: 30 100% 50% / 0.5;
+    --ember-glow: 15 100% 40% / 0.6;
 
     /* Fonts */
-    --font-display: 'Press Start 2P', cursive;
+    --font-display: 'Cinzel', serif;
     --font-body: 'Inter', sans-serif;
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 96%;
+    --background: 0 0% 5%;
+    --foreground: 35 10% 85%;
   }
 }
 
@@ -93,70 +96,79 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body);
     background: 
-      radial-gradient(ellipse at top, hsl(243 75% 15% / 0.3) 0%, transparent 50%),
-      radial-gradient(ellipse at bottom right, hsl(186 100% 20% / 0.15) 0%, transparent 40%),
-      linear-gradient(180deg, hsl(222 47% 4%) 0%, hsl(222 47% 8%) 100%);
+      radial-gradient(ellipse at top, hsl(20 50% 8% / 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom, hsl(0 50% 5% / 0.3) 0%, transparent 40%),
+      linear-gradient(180deg, hsl(0 0% 3%) 0%, hsl(0 0% 6%) 100%);
     min-height: 100vh;
   }
 }
 
 @layer components {
-  /* Glassmorphism Panel */
+  /* Dark Souls Glass Panel */
   .glass-panel {
     @apply relative;
     background: linear-gradient(
       135deg,
       hsl(var(--glass-bg)) 0%,
-      hsl(222 47% 8% / 0.9) 100%
+      hsl(0 0% 5% / 0.95) 100%
     );
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
     border: 1px solid hsl(var(--glass-border));
     box-shadow: 
-      0 8px 32px hsl(222 47% 0% / 0.4),
-      inset 0 1px 0 hsl(217 33% 40% / 0.1);
+      0 8px 32px hsl(0 0% 0% / 0.6),
+      inset 0 1px 0 hsl(30 10% 20% / 0.1),
+      inset 0 -1px 0 hsl(0 0% 0% / 0.3);
   }
 
   .glass-panel-glow {
     @apply glass-panel;
     box-shadow: 
-      0 8px 32px hsl(222 47% 0% / 0.4),
-      0 0 40px hsl(var(--glow-primary)),
-      inset 0 1px 0 hsl(217 33% 40% / 0.1);
+      0 8px 32px hsl(0 0% 0% / 0.6),
+      0 0 60px hsl(var(--ember-glow)),
+      0 0 30px hsl(var(--glow-primary)),
+      inset 0 1px 0 hsl(30 10% 25% / 0.2);
   }
 
-  /* RPG Heading Style */
+  /* Dark Souls Heading Style */
   .rpg-heading {
     font-family: var(--font-display);
-    @apply text-foreground;
+    @apply text-foreground font-semibold tracking-wide;
     text-shadow: 
-      0 0 10px hsl(var(--glow-accent)),
-      0 2px 4px hsl(222 47% 0% / 0.8);
+      0 0 20px hsl(var(--ember-glow)),
+      0 2px 4px hsl(0 0% 0% / 0.9);
   }
 
-  /* Progress bar glow */
+  /* Ember Progress glow */
   .progress-glow-xp {
     box-shadow: 
-      0 0 8px hsl(var(--glow-xp)),
-      inset 0 1px 2px hsl(160 84% 50% / 0.3);
+      0 0 12px hsl(var(--glow-xp)),
+      0 0 4px hsl(30 100% 60% / 0.5),
+      inset 0 1px 2px hsl(30 100% 70% / 0.3);
   }
 
   .progress-glow-gold {
     box-shadow: 
-      0 0 8px hsl(var(--glow-gold)),
-      inset 0 1px 2px hsl(43 96% 70% / 0.3);
+      0 0 12px hsl(var(--glow-gold)),
+      0 0 4px hsl(45 80% 70% / 0.4),
+      inset 0 1px 2px hsl(45 80% 70% / 0.3);
   }
 
-  /* Quest Card Styles */
+  /* Quest Card Styles - Weathered stone look */
   .quest-card {
     @apply glass-panel rounded-lg p-4 transition-all duration-300;
     border-left: 3px solid transparent;
+    background: linear-gradient(
+      135deg,
+      hsl(0 0% 7% / 0.9) 0%,
+      hsl(0 0% 5% / 0.95) 100%
+    );
   }
 
   .quest-card:hover {
     transform: translateY(-2px);
     box-shadow: 
-      0 12px 40px hsl(222 47% 0% / 0.5),
-      0 0 20px hsl(var(--glow-primary));
+      0 12px 40px hsl(0 0% 0% / 0.7),
+      0 0 30px hsl(var(--ember-glow));
   }
 
   .quest-card-easy {
@@ -171,33 +183,33 @@
     border-left-color: hsl(var(--hard));
   }
 
-  /* Category badges */
+  /* Category badges - aged parchment style */
   .category-badge {
-    @apply px-2 py-1 rounded-full text-xs font-medium;
+    @apply px-2 py-1 rounded text-xs font-medium;
     backdrop-filter: blur(4px);
   }
 
   .category-fitness {
     background: hsl(var(--fitness) / 0.2);
-    color: hsl(0 84% 70%);
+    color: hsl(0 50% 65%);
     border: 1px solid hsl(var(--fitness) / 0.3);
   }
 
   .category-career {
     background: hsl(var(--career) / 0.2);
-    color: hsl(217 91% 75%);
+    color: hsl(35 60% 65%);
     border: 1px solid hsl(var(--career) / 0.3);
   }
 
   .category-social {
     background: hsl(var(--social) / 0.2);
-    color: hsl(280 67% 75%);
+    color: hsl(280 40% 65%);
     border: 1px solid hsl(var(--social) / 0.3);
   }
 
   .category-learning {
     background: hsl(var(--learning) / 0.2);
-    color: hsl(160 84% 55%);
+    color: hsl(160 40% 55%);
     border: 1px solid hsl(var(--learning) / 0.3);
   }
 
@@ -205,115 +217,150 @@
   .difficulty-easy {
     @apply text-xs font-semibold px-2 py-0.5 rounded;
     background: hsl(var(--easy) / 0.15);
-    color: hsl(142 76% 50%);
+    color: hsl(120 30% 50%);
   }
 
   .difficulty-medium {
     @apply text-xs font-semibold px-2 py-0.5 rounded;
     background: hsl(var(--medium) / 0.15);
-    color: hsl(38 92% 60%);
+    color: hsl(35 70% 55%);
   }
 
   .difficulty-hard {
     @apply text-xs font-semibold px-2 py-0.5 rounded;
     background: hsl(var(--hard) / 0.15);
-    color: hsl(0 84% 70%);
+    color: hsl(0 70% 60%);
   }
 
-  /* Button variants */
+  /* Button variants - Ember style */
   .btn-quest-complete {
     @apply px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200;
-    background: linear-gradient(135deg, hsl(var(--xp)) 0%, hsl(160 84% 30%) 100%);
+    background: linear-gradient(135deg, hsl(var(--xp)) 0%, hsl(15 80% 35%) 100%);
     color: hsl(var(--xp-foreground));
     box-shadow: 
-      0 4px 12px hsl(var(--glow-xp)),
-      inset 0 1px 0 hsl(160 84% 60% / 0.3);
+      0 4px 16px hsl(var(--glow-xp)),
+      0 0 20px hsl(var(--ember-glow)),
+      inset 0 1px 0 hsl(30 100% 70% / 0.3);
   }
 
   .btn-quest-complete:hover {
     transform: translateY(-1px);
     box-shadow: 
-      0 6px 20px hsl(var(--glow-xp)),
-      inset 0 1px 0 hsl(160 84% 60% / 0.3);
+      0 6px 24px hsl(var(--glow-xp)),
+      0 0 30px hsl(var(--ember-glow)),
+      inset 0 1px 0 hsl(30 100% 70% / 0.3);
   }
 
   .btn-quest-complete:active {
     transform: translateY(0);
   }
 
-  /* Gold display */
+  /* Souls display */
   .gold-display {
     @apply flex items-center gap-2 px-3 py-1.5 rounded-lg;
-    background: linear-gradient(135deg, hsl(43 96% 20% / 0.3) 0%, hsl(43 96% 10% / 0.2) 100%);
+    background: linear-gradient(135deg, hsl(45 60% 15% / 0.4) 0%, hsl(45 40% 10% / 0.3) 100%);
     border: 1px solid hsl(var(--gold) / 0.3);
-    box-shadow: 0 0 12px hsl(var(--glow-gold));
+    box-shadow: 0 0 16px hsl(var(--glow-gold));
   }
 
   .gold-text {
     color: hsl(var(--gold));
     font-weight: 600;
-    text-shadow: 0 0 8px hsl(var(--glow-gold));
+    text-shadow: 0 0 10px hsl(var(--glow-gold));
   }
 
-  /* XP Bar */
+  /* Estus/XP Bar */
   .xp-bar-container {
-    @apply relative h-4 rounded-full overflow-hidden;
+    @apply relative h-4 rounded overflow-hidden;
     background: hsl(var(--muted));
     border: 1px solid hsl(var(--border));
   }
 
   .xp-bar-fill {
-    @apply h-full rounded-full transition-all duration-500 ease-out;
-    background: linear-gradient(90deg, hsl(var(--xp)) 0%, hsl(160 84% 50%) 100%);
+    @apply h-full rounded transition-all duration-500 ease-out;
+    background: linear-gradient(90deg, hsl(var(--xp)) 0%, hsl(35 100% 55%) 100%);
   }
 
-  /* Level badge */
+  /* Level badge - Bonfire style */
   .level-badge {
-    @apply flex items-center justify-center w-10 h-10 rounded-lg;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(243 75% 45%) 100%);
-    border: 2px solid hsl(243 75% 70% / 0.5);
+    @apply flex items-center justify-center w-10 h-10 rounded;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(10 70% 30%) 100%);
+    border: 2px solid hsl(20 70% 50% / 0.5);
     box-shadow: 
-      0 0 20px hsl(var(--glow-primary)),
-      inset 0 1px 0 hsl(243 75% 80% / 0.3);
+      0 0 25px hsl(var(--ember-glow)),
+      0 0 10px hsl(var(--glow-primary)),
+      inset 0 1px 0 hsl(30 80% 60% / 0.3);
   }
 
-  /* Avatar frame */
+  /* Avatar frame - Ancient/worn */
   .avatar-frame {
-    @apply relative w-12 h-12 rounded-lg overflow-hidden;
-    border: 2px solid hsl(var(--gold) / 0.6);
+    @apply relative w-12 h-12 rounded overflow-hidden;
+    border: 2px solid hsl(var(--gold) / 0.5);
     box-shadow: 
-      0 0 15px hsl(var(--glow-gold)),
-      inset 0 0 10px hsl(222 47% 0% / 0.5);
+      0 0 20px hsl(var(--glow-gold)),
+      inset 0 0 15px hsl(0 0% 0% / 0.6);
   }
 
-  /* Scrollbar styling */
+  /* Leaderboard styles */
+  .leaderboard-row {
+    @apply flex items-center gap-3 p-3 rounded-lg transition-all duration-200;
+    background: hsl(0 0% 6% / 0.6);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .leaderboard-row:hover {
+    background: hsl(0 0% 8% / 0.8);
+    box-shadow: 0 0 20px hsl(var(--ember-glow));
+  }
+
+  .leaderboard-rank {
+    @apply w-8 h-8 rounded flex items-center justify-center font-display font-bold text-sm;
+  }
+
+  .leaderboard-rank-1 {
+    background: linear-gradient(135deg, hsl(45 80% 50%) 0%, hsl(35 70% 40%) 100%);
+    color: hsl(0 0% 5%);
+    box-shadow: 0 0 15px hsl(var(--glow-gold));
+  }
+
+  .leaderboard-rank-2 {
+    background: linear-gradient(135deg, hsl(0 0% 70%) 0%, hsl(0 0% 50%) 100%);
+    color: hsl(0 0% 10%);
+  }
+
+  .leaderboard-rank-3 {
+    background: linear-gradient(135deg, hsl(25 60% 45%) 0%, hsl(20 50% 35%) 100%);
+    color: hsl(0 0% 95%);
+  }
+
+  /* Scrollbar styling - Darker */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
 
   ::-webkit-scrollbar-track {
     background: hsl(var(--muted));
-    border-radius: 4px;
+    border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--secondary));
-    border-radius: 4px;
+    border-radius: 3px;
     border: 1px solid hsl(var(--border));
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(217 33% 25%);
+    background: hsl(30 5% 18%);
   }
 }
 
 /* Animations */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px hsl(var(--glow-primary));
+    box-shadow: 0 0 20px hsl(var(--ember-glow));
   }
   50% {
-    box-shadow: 0 0 40px hsl(var(--glow-primary)), 0 0 60px hsl(var(--glow-accent));
+    box-shadow: 0 0 40px hsl(var(--ember-glow)), 0 0 60px hsl(var(--glow-primary));
   }
 }
 
@@ -322,7 +369,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
   }
 }
 
@@ -332,6 +379,15 @@
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+@keyframes ember-flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
   }
 }
 
@@ -347,9 +403,13 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    hsl(217 33% 40% / 0.3) 50%,
+    hsl(30 30% 30% / 0.2) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 2s linear infinite;
+  animation: shimmer 2.5s linear infinite;
+}
+
+.animate-ember {
+  animation: ember-flicker 2s ease-in-out infinite;
 }

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Swords, Brain, Heart, Zap } from 'lucide-react';
+import { Swords, Brain, Heart, Zap, Flame } from 'lucide-react';
 import { PlayerStats } from '@/types/game';
 
 interface StatsPanelProps {
@@ -7,10 +7,10 @@ interface StatsPanelProps {
 }
 
 const attributeConfig = [
-  { key: 'strength', label: 'Strength', icon: Swords, color: 'text-red-400', bgColor: 'bg-red-500/20' },
-  { key: 'intelligence', label: 'Intelligence', icon: Brain, color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
-  { key: 'charisma', label: 'Charisma', icon: Heart, color: 'text-purple-400', bgColor: 'bg-purple-500/20' },
-  { key: 'vitality', label: 'Vitality', icon: Zap, color: 'text-emerald-400', bgColor: 'bg-emerald-500/20' },
+  { key: 'strength', label: 'Strength', icon: Swords, color: 'text-red-500', bgColor: 'bg-red-600/20' },
+  { key: 'intelligence', label: 'Intelligence', icon: Brain, color: 'text-amber-500', bgColor: 'bg-amber-600/20' },
+  { key: 'charisma', label: 'Faith', icon: Heart, color: 'text-purple-400', bgColor: 'bg-purple-600/20' },
+  { key: 'vitality', label: 'Vitality', icon: Zap, color: 'text-orange-400', bgColor: 'bg-orange-600/20' },
 ] as const;
 
 export const StatsPanel = ({ stats }: StatsPanelProps) => {
@@ -21,16 +21,16 @@ export const StatsPanel = ({ stats }: StatsPanelProps) => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="glass-panel rounded-xl p-5"
+      className="glass-panel rounded-lg p-5"
     >
       <div className="flex items-center gap-3 mb-5">
-        <div className="p-2 rounded-lg bg-accent/20 border border-accent/30">
-          <Swords className="w-5 h-5 text-accent" />
+        <div className="p-2 rounded bg-primary/20 border border-primary/30 animate-ember">
+          <Flame className="w-5 h-5 text-primary" />
         </div>
         <div>
           <h2 className="rpg-heading text-sm">Attributes</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Your hero stats
+            Character Stats
           </p>
         </div>
       </div>
@@ -57,14 +57,14 @@ export const StatsPanel = ({ stats }: StatsPanelProps) => {
                 <span className={`font-display text-xs ${color}`}>{value}</span>
               </div>
               
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div className="h-2 bg-muted rounded overflow-hidden">
                 <motion.div
-                  className={`h-full rounded-full ${bgColor.replace('/20', '')}`}
+                  className={`h-full rounded ${bgColor.replace('/20', '')}`}
                   initial={{ width: 0 }}
                   animate={{ width: `${percentage}%` }}
                   transition={{ duration: 0.8, delay: 0.5 + index * 0.1, ease: "easeOut" }}
                   style={{
-                    boxShadow: `0 0 10px ${color.replace('text-', 'rgb(var(--')}`,
+                    boxShadow: `0 0 10px currentColor`,
                   }}
                 />
               </div>
@@ -76,8 +76,8 @@ export const StatsPanel = ({ stats }: StatsPanelProps) => {
       {/* Total Points */}
       <div className="mt-5 pt-4 border-t border-border">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Total Points</span>
-          <span className="font-display text-sm text-accent">
+          <span className="text-sm text-muted-foreground">Total Level</span>
+          <span className="font-display text-sm text-primary">
             {Object.values(stats.attributes).reduce((a, b) => a + b, 0)}
           </span>
         </div>

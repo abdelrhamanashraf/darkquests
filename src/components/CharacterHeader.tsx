@@ -1,6 +1,6 @@
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
-import { Coins, Sparkles, Shield } from 'lucide-react';
+import { Flame, Sparkles, Skull } from 'lucide-react';
 import { PlayerStats, getXpProgress, getXpForNextLevel } from '@/types/game';
 
 interface CharacterHeaderProps {
@@ -19,46 +19,45 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
     restDelta: 0.001
   });
 
-  // Animate gold counter
-  const springGold = useSpring(0, {
+  // Animate souls counter
+  const springSouls = useSpring(0, {
     stiffness: 100,
     damping: 20,
   });
 
-  const displayGold = useTransform(springGold, (value) => Math.round(value));
+  const displaySouls = useTransform(springSouls, (value) => Math.round(value));
 
   useEffect(() => {
     springProgress.set(progressPercent);
   }, [progressPercent, springProgress]);
 
   useEffect(() => {
-    springGold.set(stats.gold);
-  }, [stats.gold, springGold]);
+    springSouls.set(stats.gold);
+  }, [stats.gold, springSouls]);
 
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="glass-panel rounded-xl p-4 mb-6"
+      className="glass-panel rounded-lg p-4 mb-6"
     >
       <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
         {/* Avatar */}
         <div className="flex items-center gap-4">
           <div className="avatar-frame animate-pulse-glow">
-            <div className="w-full h-full bg-gradient-to-br from-primary to-purple-900 flex items-center justify-center">
-              <Shield className="w-6 h-6 text-primary-foreground" />
+            <div className="w-full h-full bg-gradient-to-br from-primary to-red-950 flex items-center justify-center">
+              <Skull className="w-6 h-6 text-primary-foreground" />
             </div>
           </div>
           
-          {/* Level Badge */}
+          {/* Level Badge - Bonfire */}
           <motion.div 
             className="level-badge"
             key={stats.level}
             initial={{ scale: 1 }}
             animate={{ 
-              scale: [1, 1.3, 1],
-              rotate: [0, -5, 5, 0]
+              scale: [1, 1.2, 1],
             }}
             transition={{ duration: 0.5 }}
           >
@@ -68,16 +67,16 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
           </motion.div>
         </div>
 
-        {/* XP Bar Section */}
+        {/* Estus/XP Bar Section */}
         <div className="flex-1 w-full sm:w-auto">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Experience
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+              Estus
             </span>
             <div className="flex items-center gap-1 text-xp">
-              <Sparkles className="w-3 h-3" />
+              <Flame className="w-3 h-3 animate-ember" />
               <span className="text-xs font-semibold">
-                {xpProgress} / {xpNeeded} XP
+                {xpProgress} / {xpNeeded}
               </span>
             </div>
           </div>
@@ -88,7 +87,7 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
               className="absolute inset-0 opacity-30"
               style={{
                 width: useTransform(springProgress, (v) => `${v}%`),
-                background: 'linear-gradient(90deg, transparent, hsl(160 84% 50% / 0.5), transparent)',
+                background: 'linear-gradient(90deg, transparent, hsl(30 100% 50% / 0.5), transparent)',
               }}
               animate={{
                 x: ['-100%', '100%'],
@@ -112,21 +111,22 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
             </motion.div>
           </div>
           
-          <div className="mt-1 text-xs text-muted-foreground">
-            Level {stats.level} Hero
+          <div className="mt-1 text-xs text-muted-foreground font-display">
+            Soul Level {stats.level}
           </div>
         </div>
 
-        {/* Gold Display */}
+        {/* Souls Display */}
         <motion.div 
           className="gold-display"
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400 }}
         >
-          <Coins className="w-5 h-5 text-gold" />
+          <Sparkles className="w-5 h-5 text-gold animate-ember" />
           <motion.span className="gold-text font-display text-sm">
-            {displayGold}
+            {displaySouls}
           </motion.span>
+          <span className="text-xs text-muted-foreground">souls</span>
         </motion.div>
       </div>
     </motion.header>

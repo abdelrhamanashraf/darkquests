@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["'Press Start 2P'", "cursive"],
+        display: ["'Cinzel'", "serif"],
         body: ["'Inter'", "sans-serif"],
       },
       colors: {
@@ -88,19 +88,23 @@ export default {
         },
         "pulse-glow": {
           "0%, 100%": {
-            boxShadow: "0 0 20px hsl(243 75% 59% / 0.4)",
+            boxShadow: "0 0 20px hsl(20 90% 45% / 0.5)",
           },
           "50%": {
-            boxShadow: "0 0 40px hsl(243 75% 59% / 0.4), 0 0 60px hsl(186 100% 50% / 0.3)",
+            boxShadow: "0 0 40px hsl(20 90% 45% / 0.5), 0 0 60px hsl(35 100% 50% / 0.4)",
           },
         },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-5px)" },
+          "50%": { transform: "translateY(-3px)" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
+        },
+        "ember-flicker": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
         },
       },
       animation: {
@@ -108,7 +112,8 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
         float: "float 4s ease-in-out infinite",
-        shimmer: "shimmer 2s linear infinite",
+        shimmer: "shimmer 2.5s linear infinite",
+        "ember-flicker": "ember-flicker 2s ease-in-out infinite",
       },
     },
   },

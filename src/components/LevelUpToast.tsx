@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Sparkles } from 'lucide-react';
+import { Flame, Sparkles } from 'lucide-react';
 
 interface LevelUpToastProps {
   show: boolean;
@@ -21,25 +21,25 @@ export const LevelUpToast = ({ show, level, onClose }: LevelUpToastProps) => {
             setTimeout(onClose, 3000);
           }}
         >
-          <div className="glass-panel-glow rounded-xl px-6 py-4 flex items-center gap-4 border-2 border-gold/30">
+          <div className="glass-panel-glow rounded-lg px-6 py-4 flex items-center gap-4 border-2 border-primary/40">
             <motion.div
               animate={{ 
-                rotate: [0, -10, 10, -10, 0],
-                scale: [1, 1.1, 1]
+                scale: [1, 1.2, 1],
+                opacity: [1, 0.7, 1]
               }}
-              transition={{ duration: 0.5, repeat: 2 }}
-              className="p-3 rounded-lg bg-gold/20"
+              transition={{ duration: 0.8, repeat: 2 }}
+              className="p-3 rounded bg-primary/30"
             >
-              <Trophy className="w-8 h-8 text-gold" />
+              <Flame className="w-8 h-8 text-primary" />
             </motion.div>
             
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="rpg-heading text-sm text-gold">Level Up!</h3>
-                <Sparkles className="w-4 h-4 text-gold animate-pulse" />
+                <h3 className="rpg-heading text-sm text-primary">SOUL LEVEL UP</h3>
+                <Sparkles className="w-4 h-4 text-gold animate-ember" />
               </div>
-              <p className="text-sm text-foreground mt-1">
-                You've reached <span className="font-bold text-gold">Level {level}</span>!
+              <p className="text-sm text-foreground mt-1 font-display">
+                You are now <span className="font-bold text-primary">Level {level}</span>
               </p>
             </div>
           </div>

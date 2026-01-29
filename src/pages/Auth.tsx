@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Gamepad2, Mail, Lock, LogIn, UserPlus, Loader2 } from 'lucide-react';
+import { Flame, Mail, Lock, LogIn, UserPlus, Loader2, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
 
 const authSchema = z.object({
@@ -16,6 +17,7 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -40,13 +42,19 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(email, password);
+        const { error, data } = await signUp(email, password);
         if (error) {
           if (error.message.includes('already registered')) {
             setError('This email is already registered. Try signing in instead.');
           } else {
             setError(error.message);
           }
+        } else if (data?.user && displayName.trim()) {
+          // Update display name after signup
+          await supabase
+            .from('player_stats')
+            .update({ display_name: displayName.trim() })
+            .eq('user_id', data.user.id);
         }
       } else {
         const { error } = await signIn(email, password);
@@ -79,22 +87,41 @@ const Auth = () => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="inline-flex p-3 rounded-xl bg-primary/20 border border-primary/30 animate-pulse-glow mb-4"
+            className="inline-flex p-3 rounded bg-primary/20 border border-primary/30 animate-pulse-glow mb-4"
           >
-            <Gamepad2 className="w-8 h-8 text-primary" />
+            <Flame className="w-8 h-8 text-primary" />
           </motion.div>
-          <h1 className="rpg-heading text-xl tracking-wider mb-2">QuestBoard</h1>
-          <p className="text-muted-foreground">
-            {isSignUp ? 'Create your hero account' : 'Welcome back, hero'}
+          <h1 className="rpg-heading text-xl tracking-wider mb-2">DARK QUESTS</h1>
+          <p className="text-muted-foreground font-display text-sm">
+            {isSignUp ? 'Create a new undead' : 'Welcome back, Ashen One'}
           </p>
         </div>
 
         {/* Auth Card */}
-        <div className="glass-panel rounded-xl p-6">
+        <div className="glass-panel rounded-lg p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Display Name (Signup only) */}
+            {isSignUp && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+                  Character Name
+                </label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Chosen Undead"
+                    className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Email */}
             <div>
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
                 Email
               </label>
               <div className="relative mt-1">
@@ -103,8 +130,8 @@ const Auth = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="hero@questboard.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder="undead@lordran.com"
+                  className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   required
                 />
               </div>
@@ -112,7 +139,7 @@ const Auth = () => {
 
             {/* Password */}
             <div>
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
                 Password
               </label>
               <div className="relative mt-1">
@@ -122,7 +149,7 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   required
                 />
               </div>
@@ -133,7 +160,7 @@ const Auth = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-lg bg-destructive/20 border border-destructive/30 text-sm text-destructive"
+                className="p-3 rounded bg-destructive/20 border border-destructive/30 text-sm text-destructive"
               >
                 {error}
               </motion.div>
@@ -145,19 +172,19 @@ const Auth = () => {
               disabled={loading}
               whileHover={{ scale: loading ? 1 : 1.02 }}
               whileTap={{ scale: loading ? 1 : 0.98 }}
-              className="w-full btn-quest-complete flex items-center justify-center gap-2 py-3 disabled:opacity-50"
+              className="w-full btn-quest-complete flex items-center justify-center gap-2 py-3 disabled:opacity-50 font-display"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : isSignUp ? (
                 <>
                   <UserPlus className="w-5 h-5" />
-                  Create Account
+                  Create Character
                 </>
               ) : (
                 <>
                   <LogIn className="w-5 h-5" />
-                  Sign In
+                  Enter the World
                 </>
               )}
             </motion.button>
@@ -166,15 +193,15 @@ const Auth = () => {
           {/* Toggle */}
           <div className="mt-6 pt-6 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+              {isSignUp ? 'Already have a character?' : "Don't have a character?"}
               <button
                 onClick={() => {
                   setIsSignUp(!isSignUp);
                   setError(null);
                 }}
-                className="ml-1 text-primary hover:underline font-medium"
+                className="ml-1 text-primary hover:underline font-medium font-display"
               >
-                {isSignUp ? 'Sign in' : 'Sign up'}
+                {isSignUp ? 'Sign in' : 'Create one'}
               </button>
             </p>
           </div>

@@ -9,7 +9,7 @@ import { StatsPanel } from '@/components/StatsPanel';
 import { Leaderboard } from '@/components/Leaderboard';
 import { LevelUpToast } from '@/components/LevelUpToast';
 import { useGameState } from '@/hooks/useGameState';
-import { playQuestCompleteSound, playLevelUpSound } from '@/lib/sounds';
+import { playQuestCompleteSound, playLevelUpSound, startAmbientFire, stopAmbientFire } from '@/lib/sounds';
 import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
@@ -17,6 +17,23 @@ const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { activeQuests, stats, loading: dataLoading, completeQuest, addQuest, deleteQuest } = useGameState(user?.id);
   const [showLevelUp, setShowLevelUp] = useState(false);
+
+  // Start ambient fire sound on mount
+  useEffect(() => {
+    // Delay slightly to ensure user interaction has happened
+    const startAmbient = () => {
+      startAmbientFire();
+      document.removeEventListener('click', startAmbient);
+    };
+    
+    // Start on first user interaction to comply with autoplay policies
+    document.addEventListener('click', startAmbient);
+    
+    return () => {
+      stopAmbientFire();
+      document.removeEventListener('click', startAmbient);
+    };
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {

@@ -42,19 +42,19 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error, data } = await signUp(email, password);
-        if (error) {
-          if (error.message.includes('already registered')) {
+        const result = await signUp(email, password);
+        if (result.error) {
+          if (result.error.message.includes('already registered')) {
             setError('This email is already registered. Try signing in instead.');
           } else {
-            setError(error.message);
+            setError(result.error.message);
           }
-        } else if (data?.user && displayName.trim()) {
-          // Update display name after signup
-          await supabase
+        } else if (result.data?.user && displayName.trim()) {
+          // Update display name after signup - cast to handle type not updated yet
+          await (supabase
             .from('player_stats')
-            .update({ display_name: displayName.trim() })
-            .eq('user_id', data.user.id);
+            .update({ display_name: displayName.trim() } as any)
+            .eq('user_id', result.data.user.id));
         }
       } else {
         const { error } = await signIn(email, password);

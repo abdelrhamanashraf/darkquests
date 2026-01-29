@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           charisma: number
           created_at: string
+          display_name: string | null
           gold: number
           id: string
           intelligence: number
@@ -30,6 +31,7 @@ export type Database = {
         Insert: {
           charisma?: number
           created_at?: string
+          display_name?: string | null
           gold?: number
           id?: string
           intelligence?: number
@@ -42,6 +44,7 @@ export type Database = {
         Update: {
           charisma?: number
           created_at?: string
+          display_name?: string | null
           gold?: number
           id?: string
           intelligence?: number

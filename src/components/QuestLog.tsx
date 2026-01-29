@@ -31,10 +31,10 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
   };
 
   const categoryOptions: { value: Category; label: string; icon: typeof Sword }[] = [
-    { value: 'fitness', label: 'Fitness', icon: Dumbbell },
-    { value: 'career', label: 'Career', icon: Sword },
-    { value: 'social', label: 'Social', icon: Users },
-    { value: 'learning', label: 'Learning', icon: BookOpen },
+    { value: 'fitness', label: 'Combat', icon: Dumbbell },
+    { value: 'career', label: 'Conquest', icon: Sword },
+    { value: 'social', label: 'Alliance', icon: Users },
+    { value: 'learning', label: 'Knowledge', icon: BookOpen },
   ];
 
   return (
@@ -42,12 +42,12 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="glass-panel rounded-xl p-5"
+      className="glass-panel rounded-lg p-5"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+          <div className="p-2 rounded bg-primary/20 border border-primary/30 animate-ember">
             <Scroll className="w-5 h-5 text-primary" />
           </div>
           <div>
@@ -62,7 +62,7 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
           onClick={() => setIsAdding(!isAdding)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`p-2 rounded transition-colors ${
             isAdding 
               ? 'bg-destructive/20 text-destructive border border-destructive/30' 
               : 'bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30'
@@ -83,39 +83,39 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
             onSubmit={handleSubmit}
             className="mb-5 overflow-hidden"
           >
-            <div className="glass-panel rounded-lg p-4 border border-primary/20 space-y-4">
+            <div className="glass-panel rounded p-4 border border-primary/20 space-y-4">
               <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Quest Title
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+                  Quest Name
                 </label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="Enter your quest..."
-                  className="w-full mt-1 px-3 py-2 bg-background/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder="Defeat the Abyss Watchers..."
+                  className="w-full mt-1 px-3 py-2 bg-background/50 border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Description (optional)
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+                  Details (optional)
                 </label>
                 <input
                   type="text"
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="Add more details..."
-                  className="w-full mt-1 px-3 py-2 bg-background/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder="Additional notes..."
+                  className="w-full mt-1 px-3 py-2 bg-background/50 border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 {/* Category */}
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Category
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+                    Type
                   </label>
                   <div className="grid grid-cols-2 gap-2 mt-1">
                     {categoryOptions.map(({ value, label, icon: Icon }) => (
@@ -123,7 +123,7 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
                         key={value}
                         type="button"
                         onClick={() => setNewCategory(value)}
-                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs transition-all ${
+                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded text-xs transition-all ${
                           newCategory === value
                             ? `category-${value} bg-opacity-30`
                             : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
@@ -138,7 +138,7 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
 
                 {/* Difficulty */}
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
                     Difficulty
                   </label>
                   <div className="flex gap-2 mt-1">
@@ -147,13 +147,13 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
                         key={diff}
                         type="button"
                         onClick={() => setNewDifficulty(diff)}
-                        className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
                           newDifficulty === diff
                             ? `difficulty-${diff}`
                             : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
                         }`}
                       >
-                        {diff.charAt(0).toUpperCase() + diff.slice(1)}
+                        {diff === 'easy' ? 'Hollow' : diff === 'medium' ? 'Knight' : 'Lord'}
                       </button>
                     ))}
                   </div>
@@ -163,9 +163,9 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
               <button
                 type="submit"
                 disabled={!newTitle.trim()}
-                className="w-full btn-quest-complete disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full btn-quest-complete disabled:opacity-50 disabled:cursor-not-allowed font-display"
               >
-                Add Quest
+                Accept Quest
               </button>
             </div>
           </motion.form>
@@ -182,9 +182,9 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
               className="text-center py-8"
             >
               <Scroll className="w-12 h-12 mx-auto text-muted-foreground/30 mb-3" />
-              <p className="text-muted-foreground">No active quests</p>
+              <p className="text-muted-foreground font-display">No active quests</p>
               <p className="text-sm text-muted-foreground/70 mt-1">
-                Click the + button to add your first quest!
+                Seek out new challenges, Ashen One
               </p>
             </motion.div>
           ) : (

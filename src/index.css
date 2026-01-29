@@ -2,95 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import '@fontsource/press-start-2p';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark RPG Theme - Primary palette */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* Primary - Indigo/Purple for magic */
+    --primary: 243 75% 59%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Slate for panels */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Darker slate */
+    --muted: 217 33% 12%;
+    --muted-foreground: 215 20% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Cyan glow */
+    --accent: 186 100% 50%;
+    --accent-foreground: 222 47% 6%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Gold for currency */
+    --gold: 43 96% 56%;
+    --gold-foreground: 222 47% 6%;
+
+    /* XP/Level - Emerald */
+    --xp: 160 84% 39%;
+    --xp-foreground: 210 40% 98%;
+
+    /* Difficulty colors */
+    --easy: 142 76% 36%;
+    --medium: 38 92% 50%;
+    --hard: 0 84% 60%;
+    --legendary: 270 76% 60%;
+
+    /* Category colors */
+    --fitness: 0 84% 60%;
+    --career: 217 91% 60%;
+    --social: 280 67% 60%;
+    --learning: 160 84% 39%;
+
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 217 33% 20%;
+    --input: 217 33% 17%;
+    --ring: 243 75% 59%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Glassmorphism */
+    --glass-bg: 222 47% 11% / 0.8;
+    --glass-border: 217 33% 30% / 0.5;
+    --glow-primary: 243 75% 59% / 0.4;
+    --glow-accent: 186 100% 50% / 0.3;
+    --glow-gold: 43 96% 56% / 0.4;
+    --glow-xp: 160 84% 39% / 0.4;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Fonts */
+    --font-display: 'Press Start 2P', cursive;
+    --font-body: 'Inter', sans-serif;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
   }
 }
 
@@ -101,5 +91,265 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    background: 
+      radial-gradient(ellipse at top, hsl(243 75% 15% / 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, hsl(186 100% 20% / 0.15) 0%, transparent 40%),
+      linear-gradient(180deg, hsl(222 47% 4%) 0%, hsl(222 47% 8%) 100%);
+    min-height: 100vh;
   }
+}
+
+@layer components {
+  /* Glassmorphism Panel */
+  .glass-panel {
+    @apply relative;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--glass-bg)) 0%,
+      hsl(222 47% 8% / 0.9) 100%
+    );
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 
+      0 8px 32px hsl(222 47% 0% / 0.4),
+      inset 0 1px 0 hsl(217 33% 40% / 0.1);
+  }
+
+  .glass-panel-glow {
+    @apply glass-panel;
+    box-shadow: 
+      0 8px 32px hsl(222 47% 0% / 0.4),
+      0 0 40px hsl(var(--glow-primary)),
+      inset 0 1px 0 hsl(217 33% 40% / 0.1);
+  }
+
+  /* RPG Heading Style */
+  .rpg-heading {
+    font-family: var(--font-display);
+    @apply text-foreground;
+    text-shadow: 
+      0 0 10px hsl(var(--glow-accent)),
+      0 2px 4px hsl(222 47% 0% / 0.8);
+  }
+
+  /* Progress bar glow */
+  .progress-glow-xp {
+    box-shadow: 
+      0 0 8px hsl(var(--glow-xp)),
+      inset 0 1px 2px hsl(160 84% 50% / 0.3);
+  }
+
+  .progress-glow-gold {
+    box-shadow: 
+      0 0 8px hsl(var(--glow-gold)),
+      inset 0 1px 2px hsl(43 96% 70% / 0.3);
+  }
+
+  /* Quest Card Styles */
+  .quest-card {
+    @apply glass-panel rounded-lg p-4 transition-all duration-300;
+    border-left: 3px solid transparent;
+  }
+
+  .quest-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 12px 40px hsl(222 47% 0% / 0.5),
+      0 0 20px hsl(var(--glow-primary));
+  }
+
+  .quest-card-easy {
+    border-left-color: hsl(var(--easy));
+  }
+
+  .quest-card-medium {
+    border-left-color: hsl(var(--medium));
+  }
+
+  .quest-card-hard {
+    border-left-color: hsl(var(--hard));
+  }
+
+  /* Category badges */
+  .category-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+    backdrop-filter: blur(4px);
+  }
+
+  .category-fitness {
+    background: hsl(var(--fitness) / 0.2);
+    color: hsl(0 84% 70%);
+    border: 1px solid hsl(var(--fitness) / 0.3);
+  }
+
+  .category-career {
+    background: hsl(var(--career) / 0.2);
+    color: hsl(217 91% 75%);
+    border: 1px solid hsl(var(--career) / 0.3);
+  }
+
+  .category-social {
+    background: hsl(var(--social) / 0.2);
+    color: hsl(280 67% 75%);
+    border: 1px solid hsl(var(--social) / 0.3);
+  }
+
+  .category-learning {
+    background: hsl(var(--learning) / 0.2);
+    color: hsl(160 84% 55%);
+    border: 1px solid hsl(var(--learning) / 0.3);
+  }
+
+  /* Difficulty badges */
+  .difficulty-easy {
+    @apply text-xs font-semibold px-2 py-0.5 rounded;
+    background: hsl(var(--easy) / 0.15);
+    color: hsl(142 76% 50%);
+  }
+
+  .difficulty-medium {
+    @apply text-xs font-semibold px-2 py-0.5 rounded;
+    background: hsl(var(--medium) / 0.15);
+    color: hsl(38 92% 60%);
+  }
+
+  .difficulty-hard {
+    @apply text-xs font-semibold px-2 py-0.5 rounded;
+    background: hsl(var(--hard) / 0.15);
+    color: hsl(0 84% 70%);
+  }
+
+  /* Button variants */
+  .btn-quest-complete {
+    @apply px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200;
+    background: linear-gradient(135deg, hsl(var(--xp)) 0%, hsl(160 84% 30%) 100%);
+    color: hsl(var(--xp-foreground));
+    box-shadow: 
+      0 4px 12px hsl(var(--glow-xp)),
+      inset 0 1px 0 hsl(160 84% 60% / 0.3);
+  }
+
+  .btn-quest-complete:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      0 6px 20px hsl(var(--glow-xp)),
+      inset 0 1px 0 hsl(160 84% 60% / 0.3);
+  }
+
+  .btn-quest-complete:active {
+    transform: translateY(0);
+  }
+
+  /* Gold display */
+  .gold-display {
+    @apply flex items-center gap-2 px-3 py-1.5 rounded-lg;
+    background: linear-gradient(135deg, hsl(43 96% 20% / 0.3) 0%, hsl(43 96% 10% / 0.2) 100%);
+    border: 1px solid hsl(var(--gold) / 0.3);
+    box-shadow: 0 0 12px hsl(var(--glow-gold));
+  }
+
+  .gold-text {
+    color: hsl(var(--gold));
+    font-weight: 600;
+    text-shadow: 0 0 8px hsl(var(--glow-gold));
+  }
+
+  /* XP Bar */
+  .xp-bar-container {
+    @apply relative h-4 rounded-full overflow-hidden;
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .xp-bar-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+    background: linear-gradient(90deg, hsl(var(--xp)) 0%, hsl(160 84% 50%) 100%);
+  }
+
+  /* Level badge */
+  .level-badge {
+    @apply flex items-center justify-center w-10 h-10 rounded-lg;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(243 75% 45%) 100%);
+    border: 2px solid hsl(243 75% 70% / 0.5);
+    box-shadow: 
+      0 0 20px hsl(var(--glow-primary)),
+      inset 0 1px 0 hsl(243 75% 80% / 0.3);
+  }
+
+  /* Avatar frame */
+  .avatar-frame {
+    @apply relative w-12 h-12 rounded-lg overflow-hidden;
+    border: 2px solid hsl(var(--gold) / 0.6);
+    box-shadow: 
+      0 0 15px hsl(var(--glow-gold)),
+      inset 0 0 10px hsl(222 47% 0% / 0.5);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--secondary));
+    border-radius: 4px;
+    border: 1px solid hsl(var(--border));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(217 33% 25%);
+  }
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--glow-primary));
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--glow-primary)), 0 0 60px hsl(var(--glow-accent));
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(217 33% 40% / 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
 }

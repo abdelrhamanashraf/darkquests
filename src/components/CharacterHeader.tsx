@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { motion, useSpring, useTransform } from 'framer-motion';
+import { useEffect } from 'react';
 import { Coins, Sparkles, Shield } from 'lucide-react';
 import { PlayerStats, getXpProgress, getXpForNextLevel } from '@/types/game';
 
@@ -10,6 +11,29 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
   const xpProgress = getXpProgress(stats.xp);
   const xpNeeded = getXpForNextLevel(stats.level);
   const progressPercent = (xpProgress / xpNeeded) * 100;
+
+  // Smooth spring animation for progress bar
+  const springProgress = useSpring(0, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // Animate gold counter
+  const springGold = useSpring(0, {
+    stiffness: 100,
+    damping: 20,
+  });
+
+  const displayGold = useTransform(springGold, (value) => Math.round(value));
+
+  useEffect(() => {
+    springProgress.set(progressPercent);
+  }, [progressPercent, springProgress]);
+
+  useEffect(() => {
+    springGold.set(stats.gold);
+  }, [stats.gold, springGold]);
 
   return (
     <motion.header
@@ -28,11 +52,20 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
           </div>
           
           {/* Level Badge */}
-          <div className="level-badge animate-float">
+          <motion.div 
+            className="level-badge"
+            key={stats.level}
+            initial={{ scale: 1 }}
+            animate={{ 
+              scale: [1, 1.3, 1],
+              rotate: [0, -5, 5, 0]
+            }}
+            transition={{ duration: 0.5 }}
+          >
             <span className="font-display text-xs text-primary-foreground">
               {stats.level}
             </span>
-          </div>
+          </motion.div>
         </div>
 
         {/* XP Bar Section */}
@@ -49,13 +82,34 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
             </div>
           </div>
           
-          <div className="xp-bar-container">
+          <div className="xp-bar-container relative overflow-hidden">
+            {/* Animated background glow */}
             <motion.div 
-              className="xp-bar-fill progress-glow-xp"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute inset-0 opacity-30"
+              style={{
+                width: useTransform(springProgress, (v) => `${v}%`),
+                background: 'linear-gradient(90deg, transparent, hsl(160 84% 50% / 0.5), transparent)',
+              }}
+              animate={{
+                x: ['-100%', '100%'],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
             />
+            
+            {/* Main progress bar */}
+            <motion.div 
+              className="xp-bar-fill progress-glow-xp relative"
+              style={{
+                width: useTransform(springProgress, (v) => `${v}%`),
+              }}
+            >
+              {/* Shimmer effect on the bar */}
+              <div className="absolute inset-0 animate-shimmer opacity-40" />
+            </motion.div>
           </div>
           
           <div className="mt-1 text-xs text-muted-foreground">
@@ -70,9 +124,9 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
           transition={{ type: "spring", stiffness: 400 }}
         >
           <Coins className="w-5 h-5 text-gold" />
-          <span className="gold-text font-display text-sm">
-            {stats.gold}
-          </span>
+          <motion.span className="gold-text font-display text-sm">
+            {displayGold}
+          </motion.span>
         </motion.div>
       </div>
     </motion.header>

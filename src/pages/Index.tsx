@@ -8,6 +8,7 @@ import { QuestLog } from '@/components/QuestLog';
 import { StatsPanel } from '@/components/StatsPanel';
 import { LevelUpToast } from '@/components/LevelUpToast';
 import { useGameState } from '@/hooks/useGameState';
+import { playQuestCompleteSound, playLevelUpSound } from '@/lib/sounds';
 import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
@@ -25,6 +26,9 @@ const Index = () => {
   const handleCompleteQuest = useCallback(async (questId: string) => {
     const { leveledUp } = await completeQuest(questId);
     
+    // Play quest complete sound
+    playQuestCompleteSound();
+    
     // Confetti effect
     confetti({
       particleCount: 100,
@@ -34,7 +38,9 @@ const Index = () => {
     });
 
     if (leveledUp) {
+      // Play level up fanfare after a short delay
       setTimeout(() => {
+        playLevelUpSound();
         confetti({
           particleCount: 200,
           spread: 100,

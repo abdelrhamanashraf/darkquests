@@ -1,6 +1,9 @@
 // Simple synthesized sound effects using Web Audio API
 // No external API needed - instant playback
 
+let ambientInterval: ReturnType<typeof setInterval> | null = null;
+let ambientGain: GainNode | null = null;
+
 const audioContext = typeof window !== 'undefined' ? new (window.AudioContext || (window as any).webkitAudioContext)() : null;
 
 export const playQuestCompleteSound = () => {
@@ -143,4 +146,117 @@ export const playAddSound = () => {
   
   oscillator.start(now);
   oscillator.stop(now + 0.15);
+};
+
+// Crackling bonfire ambient sound
+const createCrackle = () => {
+  if (!audioContext || !ambientGain) return;
+  
+  const now = audioContext.currentTime;
+  
+  // Random crackle using noise burst
+  const bufferSize = audioContext.sampleRate * 0.08;
+  const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+  const data = buffer.getChannelData(0);
+  
+  // Generate brown noise for fire-like sound
+  let lastOut = 0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    data[i] = (lastOut + (0.02 * white)) / 1.02;
+    lastOut = data[i];
+    data[i] *= 3.5; // Amplify
+  }
+  
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+  
+  // Bandpass filter for fire-like frequency
+  const filter = audioContext.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 800 + Math.random() * 400;
+  filter.Q.value = 0.5;
+  
+  // Envelope for crackle
+  const envelope = audioContext.createGain();
+  envelope.gain.setValueAtTime(0, now);
+  envelope.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.1, now + 0.01);
+  envelope.gain.exponentialRampToValueAtTime(0.01, now + 0.05 + Math.random() * 0.05);
+  
+  source.connect(filter);
+  filter.connect(envelope);
+  envelope.connect(ambientGain);
+  
+  source.start(now);
+  source.stop(now + 0.1);
+};
+
+const createDeepRumble = () => {
+  if (!audioContext || !ambientGain) return;
+  
+  const now = audioContext.currentTime;
+  
+  // Deep rumbling base of fire
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(60 + Math.random() * 20, now);
+  oscillator.frequency.linearRampToValueAtTime(50 + Math.random() * 30, now + 0.3);
+  
+  gainNode.gain.setValueAtTime(0, now);
+  gainNode.gain.linearRampToValueAtTime(0.03 + Math.random() * 0.02, now + 0.05);
+  gainNode.gain.linearRampToValueAtTime(0.02, now + 0.2);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(ambientGain);
+  
+  oscillator.start(now);
+  oscillator.stop(now + 0.5);
+};
+
+export const startAmbientFire = () => {
+  if (!audioContext) return;
+  
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+  
+  // Already playing
+  if (ambientInterval) return;
+  
+  // Create master gain for ambient sounds
+  ambientGain = audioContext.createGain();
+  ambientGain.gain.value = 0.4;
+  ambientGain.connect(audioContext.destination);
+  
+  // Play random crackles at varying intervals
+  ambientInterval = setInterval(() => {
+    // Random chance for crackle
+    if (Math.random() > 0.3) {
+      createCrackle();
+    }
+    // Occasional deep rumble
+    if (Math.random() > 0.85) {
+      createDeepRumble();
+    }
+  }, 80);
+};
+
+export const stopAmbientFire = () => {
+  if (ambientInterval) {
+    clearInterval(ambientInterval);
+    ambientInterval = null;
+  }
+  if (ambientGain) {
+    ambientGain.disconnect();
+    ambientGain = null;
+  }
+};
+
+export const setAmbientVolume = (volume: number) => {
+  if (ambientGain) {
+    ambientGain.gain.value = Math.max(0, Math.min(1, volume));
+  }
 };

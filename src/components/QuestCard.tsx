@@ -27,6 +27,7 @@ const difficultyLabels = {
   easy: 'Hollow',
   medium: 'Knight',
   hard: 'Lord',
+  legendary: 'Boss',
 };
 
 export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps) => {

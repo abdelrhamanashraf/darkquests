@@ -183,6 +183,26 @@
     border-left-color: hsl(var(--hard));
   }
 
+  .quest-card-legendary {
+    border-left-color: hsl(var(--gold));
+    background: linear-gradient(
+      135deg,
+      hsl(45 30% 8% / 0.95) 0%,
+      hsl(35 20% 6% / 0.98) 100%
+    );
+    box-shadow: 
+      0 8px 32px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(var(--glow-gold)),
+      inset 0 1px 0 hsl(45 60% 40% / 0.15);
+  }
+
+  .quest-card-legendary:hover {
+    box-shadow: 
+      0 12px 40px hsl(0 0% 0% / 0.7),
+      0 0 50px hsl(var(--glow-gold)),
+      0 0 80px hsl(45 80% 50% / 0.3);
+  }
+
   /* Category badges - aged parchment style */
   .category-badge {
     @apply px-2 py-1 rounded text-xs font-medium;
@@ -230,6 +250,16 @@
     @apply text-xs font-semibold px-2 py-0.5 rounded;
     background: hsl(var(--hard) / 0.15);
     color: hsl(0 70% 60%);
+  }
+
+  .difficulty-legendary {
+    @apply text-xs font-semibold px-2 py-0.5 rounded;
+    background: linear-gradient(135deg, hsl(45 60% 20% / 0.4) 0%, hsl(35 50% 15% / 0.3) 100%);
+    color: hsl(var(--gold));
+    border: 1px solid hsl(var(--gold) / 0.4);
+    text-shadow: 0 0 8px hsl(var(--glow-gold));
+    box-shadow: 0 0 12px hsl(var(--glow-gold));
+    animation: pulse-glow 3s ease-in-out infinite;
   }
 
   /* Button variants - Ember style */

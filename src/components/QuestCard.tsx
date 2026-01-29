@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sword, BookOpen, Users, Dumbbell, Coins, Sparkles, Check, Trash2 } from 'lucide-react';
+import { Sword, BookOpen, Users, Dumbbell, Sparkles, Flame, Check, Trash2 } from 'lucide-react';
 import { Quest, DIFFICULTY_REWARDS } from '@/types/game';
 
 interface QuestCardProps {
@@ -17,16 +17,16 @@ const categoryIcons = {
 };
 
 const categoryLabels = {
-  fitness: 'Fitness',
-  career: 'Career',
-  social: 'Social',
-  learning: 'Learning',
+  fitness: 'Combat',
+  career: 'Conquest',
+  social: 'Alliance',
+  learning: 'Knowledge',
 };
 
 const difficultyLabels = {
-  easy: 'Easy',
-  medium: 'Medium',
-  hard: 'Hard',
+  easy: 'Hollow',
+  medium: 'Knight',
+  hard: 'Lord',
 };
 
 export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps) => {
@@ -50,7 +50,7 @@ export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps
         {/* Left Section: Icon and Content */}
         <div className="flex items-start gap-3 flex-1">
           {/* Category Icon */}
-          <div className={`p-2 rounded-lg bg-category-${quest.category}/10 border border-category-${quest.category}/20`}>
+          <div className={`p-2 rounded bg-category-${quest.category}/10 border border-category-${quest.category}/20`}>
             <CategoryIcon className={`w-5 h-5 text-category-${quest.category}`} />
           </div>
 
@@ -82,11 +82,11 @@ export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps
           {/* Rewards */}
           <div className="flex items-center gap-3 text-xs">
             <div className="flex items-center gap-1 text-xp">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Flame className="w-3.5 h-3.5 animate-ember" />
               <span className="font-semibold">+{rewards.xp}</span>
             </div>
             <div className="flex items-center gap-1 text-gold">
-              <Coins className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span className="font-semibold">+{rewards.gold}</span>
             </div>
           </div>
@@ -97,7 +97,7 @@ export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps
               onClick={() => onDelete(quest.id)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+              className="p-2 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
             >
               <Trash2 className="w-4 h-4" />
             </motion.button>
@@ -109,7 +109,7 @@ export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps
               className="btn-quest-complete flex items-center gap-2"
             >
               <Check className="w-4 h-4" />
-              <span className="hidden sm:inline">Complete</span>
+              <span className="hidden sm:inline font-display text-xs">Victory</span>
             </motion.button>
           </div>
         </div>

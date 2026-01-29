@@ -25,17 +25,21 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
     const fetchLeaderboard = async () => {
       setLoading(true);
       
+      // Cast to any to handle types not being updated yet
       const { data, error } = await supabase
         .from('player_stats')
         .select('id, user_id, xp, gold, display_name')
         .order('xp', { ascending: false })
-        .limit(10);
+        .limit(10) as { data: any[] | null; error: any };
 
       if (error) {
         console.error('Error fetching leaderboard:', error);
       } else if (data) {
-        const leaderboardData = data.map((entry, index) => ({
-          ...entry,
+        const leaderboardData = data.map((entry: any, index: number) => ({
+          id: entry.id,
+          user_id: entry.user_id,
+          xp: entry.xp,
+          gold: entry.gold,
           level: calculateLevel(entry.xp),
           display_name: entry.display_name || `Undead #${index + 1}`,
         }));

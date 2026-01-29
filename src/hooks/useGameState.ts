@@ -89,12 +89,12 @@ export const useGameState = (userId: string | undefined) => {
     fetchData();
   }, [userId]);
 
-  const completeQuest = useCallback(async (questId: string): Promise<{ leveledUp: boolean; reward: { xp: number; gold: number } }> => {
-    if (!userId) return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+  const completeQuest = useCallback(async (questId: string): Promise<{ leveledUp: boolean; reward: { xp: number; gold: number }; difficulty: string }> => {
+    if (!userId) return { leveledUp: false, reward: { xp: 0, gold: 0 }, difficulty: '' };
 
     const quest = quests.find(q => q.id === questId);
     if (!quest || quest.completed) {
-      return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+      return { leveledUp: false, reward: { xp: 0, gold: 0 }, difficulty: '' };
     }
 
     const reward = DIFFICULTY_REWARDS[quest.difficulty];
@@ -113,7 +113,7 @@ export const useGameState = (userId: string | undefined) => {
 
     if (questError) {
       console.error('Error completing quest:', questError);
-      return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+      return { leveledUp: false, reward: { xp: 0, gold: 0 }, difficulty: '' };
     }
 
     // Update stats in database
@@ -130,7 +130,7 @@ export const useGameState = (userId: string | undefined) => {
 
     if (statsError) {
       console.error('Error updating stats:', statsError);
-      return { leveledUp: false, reward: { xp: 0, gold: 0 } };
+      return { leveledUp: false, reward: { xp: 0, gold: 0 }, difficulty: '' };
     }
 
     // Update local state
@@ -151,7 +151,7 @@ export const useGameState = (userId: string | undefined) => {
       )
     );
 
-    return { leveledUp, reward };
+    return { leveledUp, reward, difficulty: quest.difficulty };
   }, [quests, stats, userId]);
 
   const addQuest = useCallback(async (title: string, difficulty: Difficulty, category: Category, description?: string) => {

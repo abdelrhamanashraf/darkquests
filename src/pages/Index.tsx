@@ -11,7 +11,7 @@ import { Leaderboard } from '@/components/Leaderboard';
 import { LevelUpToast } from '@/components/LevelUpToast';
 import { YouDiedOverlay } from '@/components/YouDiedOverlay';
 import { useGameState } from '@/hooks/useGameState';
-import { playQuestCompleteSound, playLevelUpSound } from '@/lib/sounds';
+import { playQuestCompleteSound, playLevelUpSound, playBossDefeatSound } from '@/lib/sounds';
 import { playDeathSound } from '@/lib/deathSound';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -21,6 +21,7 @@ const Index = () => {
   const { activeQuests, stats, loading: dataLoading, completeQuest, addQuest, deleteQuest } = useGameState(user?.id);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showYouDied, setShowYouDied] = useState(false);
+  const [screenShake, setScreenShake] = useState(false);
 
   const handleDeleteQuest = useCallback(async (questId: string) => {
     await deleteQuest(questId);
@@ -35,18 +36,71 @@ const Index = () => {
   }, [user, authLoading, navigate]);
 
   const handleCompleteQuest = useCallback(async (questId: string) => {
-    const { leveledUp } = await completeQuest(questId);
+    const { leveledUp, difficulty } = await completeQuest(questId);
     
-    // Play quest complete sound
-    playQuestCompleteSound();
+    const isLegendary = difficulty === 'legendary';
     
-    // Ember/fire confetti effect
-    confetti({
-      particleCount: 80,
-      spread: 60,
-      origin: { y: 0.6 },
-      colors: ['#d97706', '#ea580c', '#dc2626', '#f59e0b', '#78350f'],
-    });
+    if (isLegendary) {
+      // Boss defeat - epic effects!
+      playBossDefeatSound();
+      
+      // Screen shake
+      setScreenShake(true);
+      setTimeout(() => setScreenShake(false), 500);
+      
+      // Golden confetti burst - multiple waves
+      const goldenColors = ['#ffd700', '#ffb700', '#ffa500', '#fff8dc', '#daa520', '#f0e68c'];
+      
+      // Initial explosion
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.5 },
+        colors: goldenColors,
+        scalar: 1.2,
+      });
+      
+      // Secondary bursts
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: goldenColors,
+        });
+        confetti({
+          particleCount: 80,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: goldenColors,
+        });
+      }, 200);
+      
+      // Final shimmer
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 160,
+          origin: { y: 0.6 },
+          colors: goldenColors,
+          scalar: 0.8,
+          gravity: 0.5,
+        });
+      }, 400);
+    } else {
+      // Normal quest complete
+      playQuestCompleteSound();
+      
+      // Ember/fire confetti effect
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#d97706', '#ea580c', '#dc2626', '#f59e0b', '#78350f'],
+      });
+    }
 
     if (leveledUp) {
       // Play level up fanfare after a short delay
@@ -58,7 +112,7 @@ const Index = () => {
           origin: { y: 0.5 },
           colors: ['#d97706', '#ea580c', '#eab308', '#dc2626', '#78350f'],
         });
-      }, 300);
+      }, isLegendary ? 600 : 300);
       
       setShowLevelUp(true);
     }
@@ -85,7 +139,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${screenShake ? 'animate-screen-shake' : ''}`}>
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <motion.div

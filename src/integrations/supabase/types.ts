@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      player_stats: {
+        Row: {
+          charisma: number
+          created_at: string
+          gold: number
+          id: string
+          intelligence: number
+          strength: number
+          updated_at: string
+          user_id: string
+          vitality: number
+          xp: number
+        }
+        Insert: {
+          charisma?: number
+          created_at?: string
+          gold?: number
+          id?: string
+          intelligence?: number
+          strength?: number
+          updated_at?: string
+          user_id: string
+          vitality?: number
+          xp?: number
+        }
+        Update: {
+          charisma?: number
+          created_at?: string
+          gold?: number
+          id?: string
+          intelligence?: number
+          strength?: number
+          updated_at?: string
+          user_id?: string
+          vitality?: number
+          xp?: number
+        }
+        Relationships: []
+      }
+      quests: {
+        Row: {
+          category: string
+          completed: boolean
+          created_at: string
+          description: string | null
+          difficulty: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          difficulty: string
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

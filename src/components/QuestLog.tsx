@@ -111,52 +111,50 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                {/* Category */}
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
-                    Type
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 mt-1">
-                    {categoryOptions.map(({ value, label, icon: Icon }) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => setNewCategory(value)}
-                        className={`flex items-center gap-1.5 px-2 py-1.5 rounded text-xs transition-all ${
-                          newCategory === value
-                            ? `category-${value} bg-opacity-30`
-                            : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        {label}
-                      </button>
-                    ))}
-                  </div>
+              {/* Category */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+                  Type
+                </label>
+                <div className="grid grid-cols-4 gap-2 mt-1">
+                  {categoryOptions.map(({ value, label, icon: Icon }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setNewCategory(value)}
+                      className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded text-xs transition-all ${
+                        newCategory === value
+                          ? `category-${value} bg-opacity-30`
+                          : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{label}</span>
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                {/* Difficulty */}
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
-                    Difficulty
-                  </label>
-                  <div className="grid grid-cols-4 gap-2 mt-1">
-                    {(['easy', 'medium', 'hard', 'legendary'] as Difficulty[]).map((diff) => (
-                      <button
-                        key={diff}
-                        type="button"
-                        onClick={() => setNewDifficulty(diff)}
-                        className={`px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                          newDifficulty === diff
-                            ? `difficulty-${diff}`
-                            : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {diff === 'easy' ? 'Hollow' : diff === 'medium' ? 'Knight' : diff === 'hard' ? 'Lord' : 'Boss'}
-                      </button>
-                    ))}
-                  </div>
+              {/* Difficulty */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
+                  Difficulty
+                </label>
+                <div className="grid grid-cols-4 gap-2 mt-1">
+                  {(['easy', 'medium', 'hard', 'legendary'] as Difficulty[]).map((diff) => (
+                    <button
+                      key={diff}
+                      type="button"
+                      onClick={() => setNewDifficulty(diff)}
+                      className={`px-2 py-1.5 rounded text-xs font-medium transition-all text-center ${
+                        newDifficulty === diff
+                          ? `difficulty-${diff}`
+                          : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {diff === 'easy' ? 'Hollow' : diff === 'medium' ? 'Knight' : diff === 'hard' ? 'Lord' : 'Boss'}
+                    </button>
+                  ))}
                 </div>
               </div>
 

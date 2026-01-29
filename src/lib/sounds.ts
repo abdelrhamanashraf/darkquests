@@ -102,77 +102,134 @@ export const playBossDefeatSound = () => {
 
   const now = audioContext.currentTime;
 
-  // Epic boss defeat fanfare - dramatic chord progression
-  const chordNotes = [
-    // Initial impact chord
-    { freq: 130.81, time: 0, duration: 1.5, gain: 0.4, type: 'sawtooth' as OscillatorType },    // C3
-    { freq: 196.00, time: 0, duration: 1.5, gain: 0.35, type: 'sawtooth' as OscillatorType },   // G3
-    { freq: 261.63, time: 0, duration: 1.5, gain: 0.3, type: 'triangle' as OscillatorType },    // C4
-    // Ascending victory notes
-    { freq: 329.63, time: 0.15, duration: 0.4, gain: 0.3, type: 'triangle' as OscillatorType }, // E4
-    { freq: 392.00, time: 0.3, duration: 0.4, gain: 0.3, type: 'triangle' as OscillatorType },  // G4
-    { freq: 523.25, time: 0.5, duration: 0.8, gain: 0.35, type: 'triangle' as OscillatorType }, // C5
-    { freq: 659.25, time: 0.7, duration: 0.6, gain: 0.3, type: 'sine' as OscillatorType },      // E5
-    { freq: 783.99, time: 0.9, duration: 0.8, gain: 0.35, type: 'sine' as OscillatorType },     // G5
-    { freq: 1046.50, time: 1.1, duration: 1.2, gain: 0.4, type: 'sine' as OscillatorType },     // C6 - climax
+  // Dark Souls boss victory - triumphant but dark orchestral hit
+  
+  // Initial powerful brass-like impact
+  const brassNotes = [
+    { freq: 130.81, time: 0, type: 'sawtooth' as OscillatorType },     // C3
+    { freq: 164.81, time: 0, type: 'sawtooth' as OscillatorType },     // E3
+    { freq: 196.00, time: 0, type: 'sawtooth' as OscillatorType },     // G3
+    { freq: 261.63, time: 0, type: 'triangle' as OscillatorType },     // C4
   ];
   
-  chordNotes.forEach(({ freq, time, duration, gain, type }) => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+  brassNotes.forEach(({ freq, time, type }) => {
+    const osc = audioContext!.createOscillator();
+    const gain = audioContext!.createGain();
+    const filter = audioContext!.createBiquadFilter();
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now + time);
     
-    oscillator.type = type;
-    oscillator.frequency.setValueAtTime(freq, now + time);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2000, now + time);
+    filter.frequency.linearRampToValueAtTime(500, now + time + 2);
+    filter.Q.value = 1;
     
-    gainNode.gain.setValueAtTime(0, now + time);
-    gainNode.gain.linearRampToValueAtTime(gain, now + time + 0.05);
-    gainNode.gain.setValueAtTime(gain, now + time + duration * 0.6);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, now + time + duration);
+    gain.gain.setValueAtTime(0, now + time);
+    gain.gain.linearRampToValueAtTime(0.15, now + time + 0.05);
+    gain.gain.setValueAtTime(0.12, now + time + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + time + 2.5);
     
-    oscillator.start(now + time);
-    oscillator.stop(now + time + duration + 0.1);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioContext!.destination);
+    
+    osc.start(now + time);
+    osc.stop(now + time + 3);
   });
 
-  // Add shimmering golden overtones
-  for (let i = 0; i < 5; i++) {
+  // Ascending victory phrase
+  const victoryPhrase = [
+    { freq: 523.25, time: 0.3, duration: 0.4 },   // C5
+    { freq: 659.25, time: 0.5, duration: 0.4 },   // E5  
+    { freq: 783.99, time: 0.7, duration: 0.5 },   // G5
+    { freq: 1046.50, time: 1.0, duration: 1.0 },  // C6 - sustain
+  ];
+  
+  victoryPhrase.forEach(({ freq, time, duration }) => {
+    const osc = audioContext!.createOscillator();
+    const gain = audioContext!.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now + time);
+    
+    gain.gain.setValueAtTime(0, now + time);
+    gain.gain.linearRampToValueAtTime(0.2, now + time + 0.03);
+    gain.gain.setValueAtTime(0.15, now + time + duration * 0.7);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + time + duration);
+    
+    osc.connect(gain);
+    gain.connect(audioContext!.destination);
+    
+    osc.start(now + time);
+    osc.stop(now + time + duration + 0.2);
+  });
+
+  // Choir-like sustained pad
+  const choirNotes = [
+    { freq: 261.63, detune: -8 },  // C4
+    { freq: 329.63, detune: 5 },   // E4
+    { freq: 392.00, detune: -5 },  // G4
+    { freq: 523.25, detune: 8 },   // C5
+  ];
+  
+  choirNotes.forEach(({ freq, detune }) => {
+    const osc = audioContext!.createOscillator();
+    const gain = audioContext!.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now + 1.2);
+    osc.detune.setValueAtTime(detune, now + 1.2);
+    
+    gain.gain.setValueAtTime(0, now + 1.2);
+    gain.gain.linearRampToValueAtTime(0.08, now + 1.5);
+    gain.gain.setValueAtTime(0.08, now + 3);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 4.5);
+    
+    osc.connect(gain);
+    gain.connect(audioContext!.destination);
+    
+    osc.start(now + 1.2);
+    osc.stop(now + 5);
+  });
+
+  // Shimmering high bells
+  for (let i = 0; i < 8; i++) {
     const shimmer = audioContext.createOscillator();
     const shimmerGain = audioContext.createGain();
+    
+    shimmer.type = 'sine';
+    const baseFreq = 2000 + Math.random() * 1000;
+    shimmer.frequency.setValueAtTime(baseFreq, now + 1.5 + i * 0.15);
+    shimmer.frequency.linearRampToValueAtTime(baseFreq * 1.2, now + 2 + i * 0.15);
+    
+    shimmerGain.gain.setValueAtTime(0, now + 1.5 + i * 0.15);
+    shimmerGain.gain.linearRampToValueAtTime(0.04, now + 1.55 + i * 0.15);
+    shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 2.5 + i * 0.15);
     
     shimmer.connect(shimmerGain);
     shimmerGain.connect(audioContext.destination);
     
-    shimmer.type = 'sine';
-    const startFreq = 1500 + Math.random() * 500;
-    shimmer.frequency.setValueAtTime(startFreq, now + 0.8 + i * 0.1);
-    shimmer.frequency.linearRampToValueAtTime(startFreq + 500, now + 1.5 + i * 0.1);
-    
-    shimmerGain.gain.setValueAtTime(0, now + 0.8 + i * 0.1);
-    shimmerGain.gain.linearRampToValueAtTime(0.08, now + 0.9 + i * 0.1);
-    shimmerGain.gain.exponentialRampToValueAtTime(0.01, now + 2 + i * 0.1);
-    
-    shimmer.start(now + 0.8 + i * 0.1);
-    shimmer.stop(now + 2.2 + i * 0.1);
+    shimmer.start(now + 1.5 + i * 0.15);
+    shimmer.stop(now + 3 + i * 0.15);
   }
 
-  // Deep impact bass
+  // Deep triumphant bass note
   const bass = audioContext.createOscillator();
   const bassGain = audioContext.createGain();
+  
+  bass.type = 'sine';
+  bass.frequency.setValueAtTime(65.41, now); // C2
+  
+  bassGain.gain.setValueAtTime(0.3, now);
+  bassGain.gain.setValueAtTime(0.25, now + 1);
+  bassGain.gain.exponentialRampToValueAtTime(0.01, now + 3);
   
   bass.connect(bassGain);
   bassGain.connect(audioContext.destination);
   
-  bass.type = 'sine';
-  bass.frequency.setValueAtTime(65, now);
-  bass.frequency.exponentialRampToValueAtTime(40, now + 0.5);
-  
-  bassGain.gain.setValueAtTime(0.5, now);
-  bassGain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
-  
   bass.start(now);
-  bass.stop(now + 1);
+  bass.stop(now + 3.5);
 };
 
 export const playDeleteSound = () => {

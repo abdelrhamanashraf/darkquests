@@ -1,4 +1,4 @@
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'legendary';
 export type Category = 'fitness' | 'career' | 'social' | 'learning';
 
 export interface Quest {
@@ -32,6 +32,7 @@ export const DIFFICULTY_REWARDS: Record<Difficulty, Reward> = {
   easy: { xp: 10, gold: 5 },
   medium: { xp: 25, gold: 15 },
   hard: { xp: 50, gold: 40 },
+  legendary: { xp: 150, gold: 100 },
 };
 
 export const CATEGORY_ATTRIBUTE_MAP: Record<Category, keyof PlayerStats['attributes']> = {

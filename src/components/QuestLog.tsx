@@ -141,19 +141,19 @@ export const QuestLog = ({ quests, onComplete, onDelete, onAdd }: QuestLogProps)
                   <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
                     Difficulty
                   </label>
-                  <div className="flex gap-2 mt-1">
-                    {(['easy', 'medium', 'hard'] as Difficulty[]).map((diff) => (
+                  <div className="grid grid-cols-4 gap-2 mt-1">
+                    {(['easy', 'medium', 'hard', 'legendary'] as Difficulty[]).map((diff) => (
                       <button
                         key={diff}
                         type="button"
                         onClick={() => setNewDifficulty(diff)}
-                        className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
+                        className={`px-2 py-1.5 rounded text-xs font-medium transition-all ${
                           newDifficulty === diff
                             ? `difficulty-${diff}`
                             : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
                         }`}
                       >
-                        {diff === 'easy' ? 'Hollow' : diff === 'medium' ? 'Knight' : 'Lord'}
+                        {diff === 'easy' ? 'Hollow' : diff === 'medium' ? 'Knight' : diff === 'hard' ? 'Lord' : 'Boss'}
                       </button>
                     ))}
                   </div>

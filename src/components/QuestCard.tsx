@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sword, BookOpen, Users, Dumbbell, Sparkles, Flame, Check, Trash2 } from 'lucide-react';
+import { Sword, BookOpen, Users, Dumbbell, Sparkles, Flame, Check, Skull } from 'lucide-react';
 import { Quest, DIFFICULTY_REWARDS } from '@/types/game';
 
 interface QuestCardProps {
@@ -96,11 +96,12 @@ export const QuestCard = ({ quest, index, onComplete, onDelete }: QuestCardProps
           <div className="flex items-center gap-2">
             <motion.button
               onClick={() => onDelete(quest.id)}
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="p-2 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+              className="flex items-center gap-2 px-3 py-1.5 rounded bg-destructive/20 border border-destructive/40 text-destructive hover:bg-destructive/30 hover:border-destructive/60 transition-all opacity-0 group-hover:opacity-100"
             >
-              <Trash2 className="w-4 h-4" />
+              <Skull className="w-4 h-4" />
+              <span className="hidden sm:inline font-display text-xs tracking-wide">Retreat</span>
             </motion.button>
             
             <motion.button

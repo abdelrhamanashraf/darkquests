@@ -22,8 +22,16 @@ export const StoreItemCard = ({ item, owned, canAfford, onPurchase }: StoreItemC
       className={`rpg-panel p-4 border-2 ${rarityColor} ${rarityBg} flex flex-col`}
     >
       {/* Icon/Visual */}
-      <div className="text-4xl text-center mb-3">
-        {TYPE_ICONS[item.type]}
+      <div className="w-full aspect-square flex items-center justify-center mb-3 rounded overflow-hidden bg-secondary/30">
+        {item.image_url ? (
+          <img 
+            src={item.image_url} 
+            alt={item.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="text-4xl">{TYPE_ICONS[item.type]}</span>
+        )}
       </div>
 
       {/* Name */}

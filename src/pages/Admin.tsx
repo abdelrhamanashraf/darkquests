@@ -83,7 +83,8 @@ const Admin = () => {
     await refetchStore();
   };
 
-  if (authLoading || adminLoading) {
+  // Show loading only if we're checking auth and not already authenticated via session
+  if ((authLoading || adminLoading) && !authenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -91,12 +92,11 @@ const Admin = () => {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  // If authenticated via sessionStorage, allow access even without user
+  // If not authenticated and no user, redirect will happen via useEffect
 
-  // Show password gate if not authenticated this session
-  if (!authenticated && !isAdmin) {
+  // Show password gate if not authenticated this session and user is logged in but not admin
+  if (!authenticated && !isAdmin && user) {
     return (
       <div className="min-h-screen p-4 sm:p-6 lg:p-8">
         <div className="max-w-md mx-auto">
@@ -145,6 +145,11 @@ const Admin = () => {
         </div>
       </div>
     );
+  }
+
+  // If not authenticated at all, show nothing (redirect will happen)
+  if (!authenticated && !isAdmin && !user) {
+    return null;
   }
 
   return (

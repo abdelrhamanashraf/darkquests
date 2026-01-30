@@ -193,7 +193,11 @@ const Index = () => {
         </motion.div>
 
         {/* Character Header */}
-        <CharacterHeader stats={stats} />
+        <CharacterHeader 
+          stats={stats} 
+          equippedIcon={inventory.find(i => i.equipped && i.store_items?.type === 'icon')}
+          equippedTitle={inventory.find(i => i.equipped && i.store_items?.type === 'title')}
+        />
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

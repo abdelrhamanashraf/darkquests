@@ -4,6 +4,11 @@ import { Trophy, Flame, Sparkles, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateLevel } from '@/types/game';
 
+interface EquippedItem {
+  type: string;
+  name: string;
+}
+
 interface LeaderboardEntry {
   id: string;
   user_id: string;
@@ -11,6 +16,7 @@ interface LeaderboardEntry {
   gold: number;
   level: number;
   display_name: string;
+  equipped_title?: string;
 }
 
 interface LeaderboardProps {
@@ -25,26 +31,53 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
     const fetchLeaderboard = async () => {
       setLoading(true);
       
-      // Cast to any to handle types not being updated yet
-      const { data, error } = await supabase
+      // Fetch player stats
+      const { data: statsData, error: statsError } = await supabase
         .from('player_stats')
         .select('id, user_id, xp, gold, display_name')
         .order('xp', { ascending: false })
         .limit(10) as { data: any[] | null; error: any };
 
-      if (error) {
-        console.error('Error fetching leaderboard:', error);
-      } else if (data) {
-        const leaderboardData = data.map((entry: any, index: number) => ({
-          id: entry.id,
-          user_id: entry.user_id,
-          xp: entry.xp,
-          gold: entry.gold,
-          level: calculateLevel(entry.xp),
-          display_name: entry.display_name || `Undead #${index + 1}`,
-        }));
-        setEntries(leaderboardData);
+      if (statsError) {
+        console.error('Error fetching leaderboard:', statsError);
+        setLoading(false);
+        return;
       }
+
+      if (!statsData || statsData.length === 0) {
+        setEntries([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch equipped titles for all users in the leaderboard
+      const userIds = statsData.map(s => s.user_id);
+      const { data: inventoryData } = await supabase
+        .from('user_inventory')
+        .select('user_id, equipped, store_items(type, name)')
+        .in('user_id', userIds)
+        .eq('equipped', true) as { data: any[] | null };
+
+      // Build a map of user_id -> equipped title
+      const equippedTitles: Record<string, string> = {};
+      if (inventoryData) {
+        inventoryData.forEach((item: any) => {
+          if (item.store_items?.type === 'title' && item.equipped) {
+            equippedTitles[item.user_id] = item.store_items.name;
+          }
+        });
+      }
+
+      const leaderboardData = statsData.map((entry: any, index: number) => ({
+        id: entry.id,
+        user_id: entry.user_id,
+        xp: entry.xp,
+        gold: entry.gold,
+        level: calculateLevel(entry.xp),
+        display_name: entry.display_name || `Undead #${index + 1}`,
+        equipped_title: equippedTitles[entry.user_id],
+      }));
+      setEntries(leaderboardData);
       
       setLoading(false);
     };
@@ -139,11 +172,16 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className={`text-sm font-medium truncate ${isCurrentUser ? 'text-primary' : 'text-foreground'}`}>
                       {entry.display_name}
                       {isCurrentUser && <span className="text-xs text-muted-foreground ml-1">(you)</span>}
                     </span>
+                    {entry.equipped_title && (
+                      <span className="text-xs text-amber-400 font-display">
+                        「{entry.equipped_title}」
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="font-display">Lv.{entry.level}</span>

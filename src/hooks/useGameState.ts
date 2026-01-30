@@ -204,6 +204,32 @@ export const useGameState = (userId: string | undefined) => {
     setQuests(prev => prev.filter(q => q.id !== questId));
   }, [userId]);
 
+  const refetchStats = useCallback(async () => {
+    if (!userId) return;
+    
+    const { data: statsData, error: statsError } = await supabase
+      .from('player_stats')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (statsError) {
+      console.error('Error fetching stats:', statsError);
+    } else if (statsData) {
+      setStats({
+        xp: statsData.xp,
+        gold: statsData.gold,
+        level: calculateLevel(statsData.xp),
+        attributes: {
+          strength: statsData.strength,
+          intelligence: statsData.intelligence,
+          charisma: statsData.charisma,
+          vitality: statsData.vitality,
+        },
+      });
+    }
+  }, [userId]);
+
   const activeQuests = quests.filter(q => !q.completed);
   const completedQuests = quests.filter(q => q.completed);
 
@@ -216,5 +242,6 @@ export const useGameState = (userId: string | undefined) => {
     completeQuest,
     addQuest,
     deleteQuest,
+    refetchStats,
   };
 };

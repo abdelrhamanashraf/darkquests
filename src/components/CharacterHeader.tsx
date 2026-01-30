@@ -8,9 +8,11 @@ interface CharacterHeaderProps {
   stats: PlayerStats;
   equippedIcon?: UserInventoryItem | null;
   equippedTitle?: UserInventoryItem | null;
+  equippedBanner?: UserInventoryItem | null;
+  equippedCosmetic?: UserInventoryItem | null;
 }
 
-export const CharacterHeader = ({ stats, equippedIcon, equippedTitle }: CharacterHeaderProps) => {
+export const CharacterHeader = ({ stats, equippedIcon, equippedTitle, equippedBanner, equippedCosmetic }: CharacterHeaderProps) => {
   const xpProgress = getXpProgress(stats.xp);
   const xpNeeded = getXpForNextLevel(stats.level);
   const progressPercent = (xpProgress / xpNeeded) * 100;
@@ -38,17 +40,39 @@ export const CharacterHeader = ({ stats, equippedIcon, equippedTitle }: Characte
     springSouls.set(stats.gold);
   }, [stats.gold, springSouls]);
 
+  // Get cosmetic border style
+  const getCosmeticBorderClass = () => {
+    if (!equippedCosmetic?.store_items?.name) return '';
+    const name = equippedCosmetic.store_items.name.toLowerCase();
+    if (name.includes('ember') || name.includes('fire')) return 'cosmetic-border-ember';
+    if (name.includes('frost') || name.includes('ice')) return 'cosmetic-border-frost';
+    if (name.includes('abyss') || name.includes('dark')) return 'cosmetic-border-abyss';
+    if (name.includes('gold') || name.includes('sun')) return 'cosmetic-border-gold';
+    return 'cosmetic-border-default';
+  };
+
+  // Get banner frame style
+  const getBannerFrameClass = () => {
+    if (!equippedBanner?.store_items?.name) return '';
+    const name = equippedBanner.store_items.name.toLowerCase();
+    if (name.includes('gold') || name.includes('lord')) return 'banner-frame-gold';
+    if (name.includes('abyss') || name.includes('dark')) return 'banner-frame-abyss';
+    if (name.includes('ember') || name.includes('fire')) return 'banner-frame-ember';
+    if (name.includes('dragon') || name.includes('scale')) return 'banner-frame-dragon';
+    return 'banner-frame-default';
+  };
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="glass-panel rounded-lg p-4 mb-6"
+      className={`glass-panel rounded-lg p-4 mb-6 relative overflow-hidden ${getCosmeticBorderClass()}`}
     >
-      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-        {/* Avatar */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 relative z-10">
+        {/* Avatar with optional banner frame */}
         <div className="flex items-center gap-4">
-          <div className="avatar-frame animate-pulse-glow">
+          <div className={`avatar-frame animate-pulse-glow relative ${getBannerFrameClass()}`}>
             <div className="w-full h-full bg-gradient-to-br from-primary to-red-950 flex items-center justify-center">
               {equippedIcon?.store_items?.image_url ? (
                 <img 

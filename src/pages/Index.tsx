@@ -197,6 +197,8 @@ const Index = () => {
           stats={stats} 
           equippedIcon={inventory.find(i => i.equipped && i.store_items?.type === 'icon')}
           equippedTitle={inventory.find(i => i.equipped && i.store_items?.type === 'title')}
+          equippedBanner={inventory.find(i => i.equipped && i.store_items?.type === 'banner')}
+          equippedCosmetic={inventory.find(i => i.equipped && i.store_items?.type === 'cosmetic')}
         />
 
         {/* Main Content */}

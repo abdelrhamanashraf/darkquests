@@ -331,6 +331,127 @@
       inset 0 0 15px hsl(0 0% 0% / 0.6);
   }
 
+  /* Banner Frames - Avatar decorations */
+  .banner-frame-gold {
+    border: 3px solid hsl(45 80% 50%);
+    box-shadow: 
+      0 0 30px hsl(45 80% 50% / 0.6),
+      0 0 15px hsl(45 80% 50% / 0.4),
+      inset 0 0 10px hsl(45 80% 50% / 0.2);
+  }
+
+  .banner-frame-abyss {
+    border: 3px solid hsl(280 60% 30%);
+    box-shadow: 
+      0 0 30px hsl(280 60% 30% / 0.6),
+      0 0 15px hsl(280 60% 40% / 0.4),
+      inset 0 0 10px hsl(280 60% 20% / 0.3);
+  }
+
+  .banner-frame-ember {
+    border: 3px solid hsl(var(--primary));
+    box-shadow: 
+      0 0 30px hsl(var(--ember-glow)),
+      0 0 15px hsl(var(--glow-primary)),
+      inset 0 0 10px hsl(20 90% 45% / 0.2);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .banner-frame-dragon {
+    border: 3px solid hsl(160 50% 40%);
+    box-shadow: 
+      0 0 30px hsl(160 50% 40% / 0.5),
+      0 0 15px hsl(160 50% 50% / 0.3),
+      inset 0 0 10px hsl(160 50% 30% / 0.2);
+  }
+
+  .banner-frame-default {
+    border: 3px solid hsl(0 0% 60%);
+    box-shadow: 
+      0 0 20px hsl(0 0% 60% / 0.4),
+      inset 0 0 10px hsl(0 0% 50% / 0.2);
+  }
+
+  /* Cosmetic Borders - Character header decorations */
+  .cosmetic-border-ember {
+    border: 2px solid hsl(var(--primary));
+    box-shadow: 
+      0 0 40px hsl(var(--ember-glow)),
+      0 0 20px hsl(var(--glow-primary)),
+      inset 0 0 30px hsl(20 90% 45% / 0.1);
+  }
+
+  .cosmetic-border-ember::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, hsl(20 90% 45% / 0.3), transparent, hsl(35 100% 50% / 0.3));
+    z-index: 0;
+    animation: border-glow-rotate 4s linear infinite;
+  }
+
+  .cosmetic-border-frost {
+    border: 2px solid hsl(200 70% 50%);
+    box-shadow: 
+      0 0 40px hsl(200 70% 50% / 0.5),
+      0 0 20px hsl(200 70% 60% / 0.3),
+      inset 0 0 30px hsl(200 70% 50% / 0.1);
+  }
+
+  .cosmetic-border-frost::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, hsl(200 70% 50% / 0.3), transparent, hsl(180 70% 60% / 0.3));
+    z-index: 0;
+    animation: border-glow-rotate 4s linear infinite;
+  }
+
+  .cosmetic-border-abyss {
+    border: 2px solid hsl(280 60% 40%);
+    box-shadow: 
+      0 0 40px hsl(280 60% 30% / 0.6),
+      0 0 20px hsl(280 60% 50% / 0.4),
+      inset 0 0 30px hsl(280 60% 30% / 0.15);
+  }
+
+  .cosmetic-border-abyss::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, hsl(280 60% 40% / 0.4), transparent, hsl(300 60% 50% / 0.3));
+    z-index: 0;
+    animation: border-glow-rotate 6s linear infinite reverse;
+  }
+
+  .cosmetic-border-gold {
+    border: 2px solid hsl(45 80% 55%);
+    box-shadow: 
+      0 0 40px hsl(var(--glow-gold)),
+      0 0 20px hsl(45 80% 60% / 0.4),
+      inset 0 0 30px hsl(45 80% 55% / 0.1);
+  }
+
+  .cosmetic-border-gold::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, hsl(45 80% 55% / 0.4), transparent, hsl(35 80% 60% / 0.3));
+    z-index: 0;
+    animation: border-glow-rotate 3s linear infinite;
+  }
+
+  .cosmetic-border-default {
+    border: 2px solid hsl(0 0% 50%);
+    box-shadow: 
+      0 0 30px hsl(0 0% 50% / 0.4),
+      inset 0 0 20px hsl(0 0% 40% / 0.1);
+  }
+
   /* Leaderboard styles */
   .leaderboard-row {
     @apply flex items-center gap-3 p-3 rounded-lg transition-all duration-200;
@@ -451,6 +572,20 @@
   }
   90% {
     transform: translateX(-1px) translateY(1px);
+  }
+}
+
+@keyframes border-glow-rotate {
+  0% {
+    opacity: 0.5;
+    transform: rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+    transform: rotate(360deg);
   }
 }
 

@@ -2,12 +2,15 @@ import { motion, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
 import { Flame, Sparkles, Skull } from 'lucide-react';
 import { PlayerStats, getXpProgress, getXpForNextLevel } from '@/types/game';
+import { UserInventoryItem } from '@/types/store';
 
 interface CharacterHeaderProps {
   stats: PlayerStats;
+  equippedIcon?: UserInventoryItem | null;
+  equippedTitle?: UserInventoryItem | null;
 }
 
-export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
+export const CharacterHeader = ({ stats, equippedIcon, equippedTitle }: CharacterHeaderProps) => {
   const xpProgress = getXpProgress(stats.xp);
   const xpNeeded = getXpForNextLevel(stats.level);
   const progressPercent = (xpProgress / xpNeeded) * 100;
@@ -47,7 +50,17 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
         <div className="flex items-center gap-4">
           <div className="avatar-frame animate-pulse-glow">
             <div className="w-full h-full bg-gradient-to-br from-primary to-red-950 flex items-center justify-center">
-              <Skull className="w-6 h-6 text-primary-foreground" />
+              {equippedIcon?.store_items?.image_url ? (
+                <img 
+                  src={equippedIcon.store_items.image_url} 
+                  alt={equippedIcon.store_items.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : equippedIcon?.store_items?.name ? (
+                <span className="text-2xl">{equippedIcon.store_items.name.charAt(0)}</span>
+              ) : (
+                <Skull className="w-6 h-6 text-primary-foreground" />
+              )}
             </div>
           </div>
           
@@ -111,8 +124,13 @@ export const CharacterHeader = ({ stats }: CharacterHeaderProps) => {
             </motion.div>
           </div>
           
-          <div className="mt-1 text-xs text-muted-foreground font-display">
-            Soul Level {stats.level}
+          <div className="mt-1 text-xs text-muted-foreground font-display flex items-center gap-2">
+            <span>Soul Level {stats.level}</span>
+            {equippedTitle?.store_items?.name && (
+              <span className="text-amber-400 font-semibold">
+                「{equippedTitle.store_items.name}」
+              </span>
+            )}
           </div>
         </div>
 

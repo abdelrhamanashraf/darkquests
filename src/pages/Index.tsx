@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
-import { Flame, LogOut, Loader2, Shield } from 'lucide-react';
+import { Flame, LogOut, Loader2 } from 'lucide-react';
 import { CharacterHeader } from '@/components/CharacterHeader';
 import { AmbientAudioControl } from '@/components/AmbientAudioControl';
 import { QuestLog } from '@/components/QuestLog';
@@ -12,7 +12,9 @@ import { LevelUpToast } from '@/components/LevelUpToast';
 import { YouDiedOverlay } from '@/components/YouDiedOverlay';
 import { BossVictoryBanner } from '@/components/BossVictoryBanner';
 import { StorePanel } from '@/components/store/StorePanel';
+import { InventoryPanel } from '@/components/store/InventoryPanel';
 import { useGameState } from '@/hooks/useGameState';
+import { useStore } from '@/hooks/useStore';
 import { playQuestCompleteSound, playLevelUpSound, playBossDefeatSound } from '@/lib/sounds';
 import { playDeathSound } from '@/lib/deathSound';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +23,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const { activeQuests, stats, loading: dataLoading, completeQuest, addQuest, deleteQuest, refetchStats } = useGameState(user?.id);
+  const { inventory, refetch: refetchInventory } = useStore(user?.id);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showYouDied, setShowYouDied] = useState(false);
   const [screenShake, setScreenShake] = useState(false);
@@ -170,17 +173,12 @@ const Index = () => {
               onGoldChange={refetchStats} 
             />
             
-            <AmbientAudioControl />
+            <InventoryPanel 
+              inventory={inventory} 
+              onRefresh={async () => { await refetchInventory(); }} 
+            />
             
-            <Link to="/admin">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-3 py-2 rounded bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors text-sm"
-              >
-                <Shield className="w-4 h-4" />
-              </motion.button>
-            </Link>
+            <AmbientAudioControl />
             
             <motion.button
               onClick={handleSignOut}

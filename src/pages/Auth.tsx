@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flame, Mail, Lock, LogIn, UserPlus, Loader2, User } from 'lucide-react';
+import { Flame, Mail, Lock, LogIn, UserPlus, Loader2, User, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
+
+// Admin credentials
+const ADMIN_EMAIL = 'admin@darkquests.com';
+const ADMIN_PASSWORD = 'darksouls123';
 
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -15,6 +19,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { user, signIn, signUp } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -30,6 +35,20 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Admin mode - check hardcoded credentials
+    if (isAdminMode) {
+      setLoading(true);
+      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        // Store admin session temporarily
+        sessionStorage.setItem('admin_authenticated', 'true');
+        navigate('/admin');
+      } else {
+        setError('Invalid admin credentials.');
+      }
+      setLoading(false);
+      return;
+    }
 
     // Validate inputs
     const result = authSchema.safeParse({ email, password });
@@ -87,21 +106,35 @@ const Auth = () => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="inline-flex p-3 rounded bg-primary/20 border border-primary/30 animate-pulse-glow mb-4"
+            className={`inline-flex p-3 rounded border animate-pulse-glow mb-4 ${
+              isAdminMode 
+                ? 'bg-amber-500/20 border-amber-500/30' 
+                : 'bg-primary/20 border-primary/30'
+            }`}
           >
-            <Flame className="w-8 h-8 text-primary" />
+            {isAdminMode ? (
+              <Shield className="w-8 h-8 text-amber-500" />
+            ) : (
+              <Flame className="w-8 h-8 text-primary" />
+            )}
           </motion.div>
-          <h1 className="rpg-heading text-xl tracking-wider mb-2">DARK QUESTS</h1>
+          <h1 className="rpg-heading text-xl tracking-wider mb-2">
+            {isAdminMode ? 'ADMIN ACCESS' : 'DARK QUESTS'}
+          </h1>
           <p className="text-muted-foreground font-display text-sm">
-            {isSignUp ? 'Create a new undead' : 'Welcome back, Ashen One'}
+            {isAdminMode 
+              ? 'Enter admin credentials' 
+              : isSignUp 
+                ? 'Create a new undead' 
+                : 'Welcome back, Ashen One'}
           </p>
         </div>
 
         {/* Auth Card */}
         <div className="glass-panel rounded-lg p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Display Name (Signup only) */}
-            {isSignUp && (
+            {/* Display Name (Signup only, not admin mode) */}
+            {isSignUp && !isAdminMode && (
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
                   Character Name
@@ -122,7 +155,7 @@ const Auth = () => {
             {/* Email */}
             <div>
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
-                Email
+                {isAdminMode ? 'Admin Email' : 'Email'}
               </label>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -130,7 +163,7 @@ const Auth = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="undead@lordran.com"
+                  placeholder={isAdminMode ? 'admin@darkquests.com' : 'undead@lordran.com'}
                   className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   required
                 />
@@ -140,7 +173,7 @@ const Auth = () => {
             {/* Password */}
             <div>
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-display">
-                Password
+                {isAdminMode ? 'Admin Password' : 'Password'}
               </label>
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -176,6 +209,11 @@ const Auth = () => {
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
+              ) : isAdminMode ? (
+                <>
+                  <Shield className="w-5 h-5" />
+                  Access Dashboard
+                </>
               ) : isSignUp ? (
                 <>
                   <UserPlus className="w-5 h-5" />
@@ -191,19 +229,34 @@ const Auth = () => {
           </form>
 
           {/* Toggle */}
-          <div className="mt-6 pt-6 border-t border-border text-center">
-            <p className="text-sm text-muted-foreground">
-              {isSignUp ? 'Already have a character?' : "Don't have a character?"}
-              <button
-                onClick={() => {
+          <div className="mt-6 pt-6 border-t border-border text-center space-y-3">
+            {!isAdminMode && (
+              <p className="text-sm text-muted-foreground">
+                {isSignUp ? 'Already have a character?' : "Don't have a character?"}
+                <button
+                  onClick={() => {
                   setIsSignUp(!isSignUp);
                   setError(null);
                 }}
-                className="ml-1 text-primary hover:underline font-medium font-display"
-              >
-                {isSignUp ? 'Sign in' : 'Create one'}
-              </button>
-            </p>
+                  className="ml-1 text-primary hover:underline font-medium font-display"
+                >
+                  {isSignUp ? 'Sign in' : 'Create one'}
+                </button>
+              </p>
+            )}
+            
+            <button
+              onClick={() => {
+                setIsAdminMode(!isAdminMode);
+                setIsSignUp(false);
+                setError(null);
+                setEmail('');
+                setPassword('');
+              }}
+              className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors font-display"
+            >
+              {isAdminMode ? '← Back to player login' : 'Admin access'}
+            </button>
           </div>
         </div>
       </motion.div>

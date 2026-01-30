@@ -24,14 +24,18 @@ const Admin = () => {
   const { toast } = useToast();
   
   const [password, setPassword] = useState('');
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(() => {
+    // Check if admin was authenticated via login page
+    return sessionStorage.getItem('admin_authenticated') === 'true';
+  });
   const [promoting, setPromoting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    // Allow access if authenticated via session or if user is logged in
+    if (!authLoading && !user && !authenticated) {
       navigate('/auth');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, authenticated]);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

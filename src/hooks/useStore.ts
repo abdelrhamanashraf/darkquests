@@ -118,12 +118,22 @@ export const useStore = (userId?: string) => {
     return inventory.some(inv => inv.item_id === itemId);
   }, [inventory]);
 
+  const getEquippedItems = useCallback(() => {
+    return inventory.filter(inv => inv.equipped);
+  }, [inventory]);
+
+  const getEquippedByType = useCallback((type: string) => {
+    return inventory.find(inv => inv.equipped && inv.store_items?.type === type);
+  }, [inventory]);
+
   return {
     items,
     inventory,
     loading,
     purchaseItem,
     isOwned,
+    getEquippedItems,
+    getEquippedByType,
     refetch: () => Promise.all([fetchItems(), fetchInventory()]),
   };
 };

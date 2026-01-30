@@ -93,168 +93,19 @@ export const playLevelUpSound = () => {
   shimmer.stop(now + 1.1);
 };
 
+// Import victory sound
+import victorySoundFile from '@/assets/sounds/victory.mp3';
+
+let victoryAudio: HTMLAudioElement | null = null;
+
 export const playBossDefeatSound = () => {
-  if (!audioContext) return;
-  
-  if (audioContext.state === 'suspended') {
-    audioContext.resume();
+  // Use the actual Dark Souls victory sound
+  if (!victoryAudio) {
+    victoryAudio = new Audio(victorySoundFile);
   }
-
-  const now = audioContext.currentTime;
-
-  // DARK SOULS BOSS VICTORY - Solemn, gothic, weighty triumph
-  // Not happy - this is dark, cathedral-like, almost mournful victory
-  
-  // Deep organ-like power chord - D minor (dark key)
-  const organNotes = [
-    { freq: 36.71, type: 'sawtooth' as OscillatorType },  // D1
-    { freq: 73.42, type: 'sawtooth' as OscillatorType },  // D2
-    { freq: 110, type: 'sawtooth' as OscillatorType },    // A2
-    { freq: 146.83, type: 'triangle' as OscillatorType }, // D3
-    { freq: 174.61, type: 'triangle' as OscillatorType }, // F3 (minor third)
-  ];
-  
-  organNotes.forEach(({ freq, type }) => {
-    const osc = audioContext!.createOscillator();
-    const gain = audioContext!.createGain();
-    const filter = audioContext!.createBiquadFilter();
-    
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
-    
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(800, now);
-    filter.frequency.linearRampToValueAtTime(300, now + 4);
-    filter.Q.value = 1;
-    
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.12, now + 0.1);
-    gain.gain.setValueAtTime(0.1, now + 2);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 5);
-    
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioContext!.destination);
-    
-    osc.start(now);
-    osc.stop(now + 5.5);
-  });
-
-  // Slow, heavy ascending phrase - not cheerful, but inevitable victory
-  const victoryPhrase = [
-    { freq: 146.83, time: 0.5 },   // D3
-    { freq: 174.61, time: 1.0 },   // F3
-    { freq: 196.00, time: 1.5 },   // G3
-    { freq: 220.00, time: 2.0 },   // A3
-    { freq: 293.66, time: 2.8 },   // D4 - final, sustained
-  ];
-  
-  victoryPhrase.forEach(({ freq, time }) => {
-    const osc = audioContext!.createOscillator();
-    const gain = audioContext!.createGain();
-    const filter = audioContext!.createBiquadFilter();
-    
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, now + time);
-    
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1200, now + time);
-    filter.frequency.linearRampToValueAtTime(400, now + time + 1.5);
-    
-    gain.gain.setValueAtTime(0, now + time);
-    gain.gain.linearRampToValueAtTime(0.15, now + time + 0.08);
-    gain.gain.setValueAtTime(0.12, now + time + 0.8);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + time + 1.8);
-    
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioContext!.destination);
-    
-    osc.start(now + time);
-    osc.stop(now + time + 2);
-  });
-
-  // Dark choir drone - fifths and octaves, no major thirds
-  const choirNotes = [
-    { freq: 146.83, detune: -8 },   // D3
-    { freq: 220.00, detune: 5 },    // A3
-    { freq: 293.66, detune: -5 },   // D4
-    { freq: 440.00, detune: 8 },    // A4
-  ];
-  
-  choirNotes.forEach(({ freq, detune }) => {
-    const osc = audioContext!.createOscillator();
-    const gain = audioContext!.createGain();
-    
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now + 2.5);
-    osc.detune.setValueAtTime(detune, now + 2.5);
-    
-    gain.gain.setValueAtTime(0, now + 2.5);
-    gain.gain.linearRampToValueAtTime(0.06, now + 3);
-    gain.gain.setValueAtTime(0.06, now + 5);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 7);
-    
-    osc.connect(gain);
-    gain.connect(audioContext!.destination);
-    
-    osc.start(now + 2.5);
-    osc.stop(now + 7.5);
-  });
-
-  // Deep bell toll - funeral/cathedral bell
-  const bellFreq = 110; // A2
-  const bell = audioContext.createOscillator();
-  const bellGain = audioContext.createGain();
-  
-  bell.type = 'sine';
-  bell.frequency.setValueAtTime(bellFreq, now + 3.5);
-  
-  bellGain.gain.setValueAtTime(0, now + 3.5);
-  bellGain.gain.linearRampToValueAtTime(0.2, now + 3.55);
-  bellGain.gain.exponentialRampToValueAtTime(0.001, now + 6);
-  
-  bell.connect(bellGain);
-  bellGain.connect(audioContext.destination);
-  
-  bell.start(now + 3.5);
-  bell.stop(now + 6.5);
-  
-  // Bell overtones
-  [2, 3, 4.2, 5.4].forEach((mult, i) => {
-    const overtone = audioContext!.createOscillator();
-    const otGain = audioContext!.createGain();
-    
-    overtone.type = 'sine';
-    overtone.frequency.setValueAtTime(bellFreq * mult, now + 3.5);
-    
-    otGain.gain.setValueAtTime(0, now + 3.5);
-    otGain.gain.linearRampToValueAtTime(0.08 / (i + 1), now + 3.55);
-    otGain.gain.exponentialRampToValueAtTime(0.001, now + 5 - i * 0.3);
-    
-    overtone.connect(otGain);
-    otGain.connect(audioContext!.destination);
-    
-    overtone.start(now + 3.5);
-    overtone.stop(now + 5.5);
-  });
-
-  // Sub bass foundation
-  const sub = audioContext.createOscillator();
-  const subGain = audioContext.createGain();
-  
-  sub.type = 'sine';
-  sub.frequency.setValueAtTime(36.71, now); // D1
-  
-  subGain.gain.setValueAtTime(0.25, now);
-  subGain.gain.setValueAtTime(0.2, now + 3);
-  subGain.gain.exponentialRampToValueAtTime(0.001, now + 6);
-  
-  sub.connect(subGain);
-  subGain.connect(audioContext.destination);
-  
-  sub.start(now);
-  sub.stop(now + 6.5);
+  victoryAudio.currentTime = 0;
+  victoryAudio.volume = 0.7;
+  victoryAudio.play().catch(console.error);
 };
 
 export const playDeleteSound = () => {
